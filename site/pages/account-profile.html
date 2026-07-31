@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>البروفايل · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <main>
+    <section class="section-pad" style="padding-top: 140px;">
+      <div class="container" style="max-width: 720px;">
+        <div class="admin-page-head reveal">
+          <div>
+            <div class="crumbs" style="margin-bottom: 12px; color: var(--ink-soft); font-size: 0.9rem;"><a href="account.html" style="color: var(--coral);">حسابي</a> · البروفايل</div>
+            <h1>البروفايل بتاعك</h1>
+            <p>البيانات اللي عندنا عليك. لو عايز تغيّر حاجة، كلمنا على واتساب.</p>
+          </div>
+        </div>
+
+        <div class="admin-card reveal">
+          <div class="kpi-row">
+            <div class="kpi-label">الاسم</div>
+            <div class="kpi-value" id="p-name">-</div>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi-label">الإيميل</div>
+            <div class="kpi-value" id="p-email" style="direction: ltr;">-</div>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi-label">الموبايل</div>
+            <div class="kpi-value" id="p-phone" style="direction: ltr;">-</div>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi-label">عضو من</div>
+            <div class="kpi-value" id="p-since">-</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+          <a href="account.html" class="btn btn-ghost">رجوع</a>
+          <button id="signOut" class="btn btn-dark">خروج</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader();
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const s = AquaDB.session.get();
+    if (!s) { location.href = 'sign-in.html'; }
+    const c = AquaDB.customers.get(s.customerId);
+    if (!c) { AquaDB.session.clear(); location.href = 'sign-in.html'; }
+
+    document.getElementById('p-name').textContent = c.name;
+    document.getElementById('p-email').textContent = c.email || '—';
+    document.getElementById('p-phone').textContent = c.phone || '—';
+    document.getElementById('p-since').textContent = new Date(c.createdAt).toLocaleDateString('ar-EG');
+
+    document.getElementById('signOut').addEventListener('click', () => {
+      AquaDB.session.clear();
+      Aqua.toast('خرجت من حسابك', 'success');
+      setTimeout(() => location.href = 'sign-in.html', 600);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>احجز سيشن · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <section class="hero-sm">
+    <div class="container">
+      <div class="crumbs"><a href="../index.html">الرئيسية</a> · احجز سيشن</div>
+      <span class="eyebrow">احجز في دقيقة</span>
+      <h1>اختار سيشن<br />وسيب الباقي علينا.</h1>
+      <p>كل السيشنز الجاية مرتّبة على التقويم. اختار واحد، ابعتلنا اسمك ورقمك، وإحنا هنأكدلك على واتساب في أقل من ساعة.</p>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-head reveal">
+        <div class="left">
+          <span class="eyebrow">السيشنز المتاحة</span>
+          <h2 class="display section-title">إمام تحب<br />تنزل المية؟</h2>
+        </div>
+        <p class="lede" style="max-width: 380px;">كل سيشن ساعة مع كوتش متخصص وكل العدة علينا. السعر يختلف حسب النشاط.</p>
+      </div>
+
+      <div class="session-list" id="sessions"></div>
+
+      <div class="dashboard-card" style="margin-top: 60px;">
+        <h2 class="display">ابعت طلبك</h2>
+        <form id="bookingForm" class="admin-form">
+          <div id="formBody">
+            <div class="form-row">
+              <div class="field">
+                <label for="b-name">اسمك</label>
+                <input type="text" id="b-name" required placeholder="مثلاً: سلمى حسن" />
+              </div>
+              <div class="field">
+                <label for="b-phone">موبايل أو واتساب</label>
+                <input type="tel" id="b-phone" required placeholder="+20 ..." />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="b-activity">النشاط</label>
+                <select id="b-activity" required>
+                  <option value="">اختار نشاط</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="b-session">السيشن</label>
+                <select id="b-session" required>
+                  <option value="">اختار سيشن</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="b-size">عدد الناس</label>
+                <select id="b-size">
+                  <option value="1">واحد</option>
+                  <option value="2">اتنين</option>
+                  <option value="3">تلاتة</option>
+                  <option value="4">أربعة</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="b-payment">الدفع</label>
+                <select id="b-payment">
+                  <option value="unpaid">هنفعّل كاش في المكان</option>
+                  <option value="deposit_paid">دفعت عربون أونلاين</option>
+                  <option value="paid">دفعت بالكامل أونلاين</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="b-notes">حاجة نعرفها؟ <span class="muted" style="font-weight:500;">(اختياري)</span></label>
+              <textarea id="b-notes" placeholder="أول مرة؟ جاي مع صحابك؟ جرح قديم؟"></textarea>
+            </div>
+            <div class="form-actions">
+              <small>هنأكدلك على واتساب في أقل من ساعة.</small>
+              <button type="submit" class="btn btn-primary btn-lg btn-arrow">ابعت الطلب</button>
+            </div>
+          </div>
+          <div class="form-success" id="formSuccess">
+            <div class="check"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3 class="display">استلمنا طلبك.</h3>
+            <p id="success-msg">هنكلمك على واتساب كمان شوية عشان نقفل مكانك.</p>
+            <a href="account.html" class="btn btn-ghost">شوف حجوزاتي</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader();
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const params = new URLSearchParams(location.search);
+    const preselectActivity = params.get('activity');
+
+    const allSessions = AquaDB.sessions.upcoming();
+    const acts = AquaDB.activities.active();
+    const coaches = AquaDB.coaches.all();
+
+    const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+
+    const actSel = document.getElementById('b-activity');
+    acts.forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.id; o.textContent = a.name + ' (ابتداءً من ' + a.pricing[0].price + ' جنيه)';
+      actSel.appendChild(o);
+    });
+    if (preselectActivity) {
+      const a = AquaDB.activities.get(preselectActivity);
+      if (a) actSel.value = a.id;
+    }
+
+    const sesSel = document.getElementById('b-session');
+    function renderSessionList() {
+      const list = document.getElementById('sessions');
+      list.innerHTML = '';
+      const filtered = allSessions.filter(s => !actSel.value || s.activityId === actSel.value);
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="timeline-tile text-center">
+            <h3 class="display" style="margin-bottom: 8px;">مفيش سيشنز متاحة دلوقتي</h3>
+            <p class="muted">جرب نشاط تاني أو كلمنا على واتساب وهنرتبلك سيشن.</p>
+            <a href="https://wa.me/201011329642" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top: 16px;">كلمنا واتساب</a>
+          </div>
+        `;
+        sesSel.innerHTML = '<option value="">مفيش سيشنز متاحة</option>';
+        return;
+      }
+      filtered.slice(0, 12).forEach(s => {
+        const a = acts.find(x => x.id === s.activityId);
+        const c = coaches.find(x => x.id === s.coachId);
+        const d = new Date(s.startsAt);
+        const day = AquaDB.dayName[d.getDay()];
+        const time = d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' });
+        const date = d.getDate() + ' ' + AquaDB.monthName[d.getMonth()];
+        const item = el('div', 'session-item');
+        item.dataset.sessionId = s.id;
+        item.innerHTML = `
+          <div class="when">
+            <div class="date">${day} · ${date}</div>
+            <div class="time">${time}</div>
+          </div>
+          <div class="what">
+            <h3>${a ? a.name : 'نشاط'}</h3>
+            <p>كوتش ${c ? c.name : 'أكوا لودو'} · ${s.durationMin} دقيقة · ${s.booked}/${s.capacity} محجوز</p>
+          </div>
+          <div class="price">${a ? a.pricing[0].price : 0} جنيه</div>
+        `;
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.session-item').forEach(x => x.classList.remove('selected'));
+          item.classList.add('selected');
+          sesSel.value = s.id;
+        });
+        list.appendChild(item);
+      });
+      sesSel.innerHTML = '<option value="">اختار سيشن</option>';
+      filtered.slice(0, 12).forEach(s => {
+        const a = acts.find(x => x.id === s.activityId);
+        const d = new Date(s.startsAt);
+        const time = d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' });
+        const date = d.getDate() + ' ' + AquaDB.monthName[d.getMonth()];
+        const o = document.createElement('option');
+        o.value = s.id;
+        o.textContent = (a ? a.name : '') + ' · ' + date + ' ' + time;
+        sesSel.appendChild(o);
+      });
+    }
+    actSel.addEventListener('change', renderSessionList);
+    renderSessionList();
+
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('b-name').value.trim();
+      const phone = document.getElementById('b-phone').value.trim();
+      const activityId = actSel.value;
+      const sessionId = sesSel.value;
+      if (!name || !phone) { Aqua.toast('دخّل اسمك ورقمك', 'error'); return; }
+      if (!activityId) { Aqua.toast('اختار نشاط', 'error'); return; }
+      if (!sessionId) { Aqua.toast('اختار سيشن', 'error'); return; }
+      const session = allSessions.find(s => s.id === sessionId);
+      if (!session) return;
+      const customer = AquaDB.customers.findOrCreate({ name, phone });
+      const booking = AquaDB.bookings.create({
+        customerId: customer.id,
+        sessionId,
+        activityId,
+        name, phone,
+        notes: document.getElementById('b-notes').value.trim(),
+        startAt: session.startsAt,
+        partySize: parseInt(document.getElementById('b-size').value) || 1,
+        payment: document.getElementById('b-payment').value,
+      });
+      const a = acts.find(x => x.id === activityId);
+      const d = new Date(session.startsAt);
+      const dateStr = d.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
+      const timeStr = d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('success-msg').textContent = `${a.name} · ${dateStr} الساعة ${timeStr}. هنكلمك على واتساب.`;
+      document.getElementById('formBody').style.display = 'none';
+      document.getElementById('formSuccess').classList.add('show');
+      Aqua.toast('استلمنا طلبك', 'success');
+      AquaDB.session.set(customer.id);
+    });
+
+    Aqua.reveal();
+  </script>
+</body>
+</html>

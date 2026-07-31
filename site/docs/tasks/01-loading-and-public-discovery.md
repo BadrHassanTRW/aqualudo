@@ -1,0 +1,24 @@
+# Task 01. Loading and Public Discovery
+
+## Goal
+Ship the public face of AquaLudo: a branded water-themed splash that fires once per browser session, a clear home page with a Book Now call-to-action, an About page introducing the academy and its five activities, a Contact page with map and WhatsApp link, plus a site-wide header and footer so visitors can navigate the MVP from any page.
+
+## Steps
+1. **Scaffold the App Router shell and global styles** — Create the root layout, home route, and a `globals.css` that defines the brand palette (Nile blue, sand, white) and typography scale. Files: `app/layout.tsx`, `app/page.tsx`, `app/globals.css`, `tailwind.config.ts` (extend theme with brand colors and a `water` font family). Notes: Use the Next.js default `<html lang="en">` for now; defer RTL/Arabic.
+2. **Build the site header with primary navigation** — Add a sticky top header with the AquaLudo wordmark on the left and links to Home, About, Contact on the right. Files: `components/Header.tsx`, wire it into `app/layout.tsx`. Notes: Use plain anchor links to `/`, `/about`, `/contact`; no dropdowns or auth-aware items in the MVP.
+3. **Build the site footer with contact and social links** — Add a footer with address, phone, WhatsApp deep link, and placeholders for Instagram/Facebook icons. Files: `components/Footer.tsx`, wire it into `app/layout.tsx`. Notes: WhatsApp link should use `https://wa.me/<number>` format with a TODO for the real number.
+4. **Implement the water-themed splash loader with session skip** — Create a client component that renders a full-screen CSS animation (animated water gradient + AquaLudo wordmark) on first mount, and a `lib/session.ts` helper that uses `sessionStorage` to remember the visit. Files: `components/SplashLoader.tsx`, `lib/session.ts`, `components/SplashLoader.css` (or styled with Tailwind keyframes in `globals.css`). Notes: First visit in a tab shows the splash for ~1.5s then fades out; reopening the same tab or any new tab in the same session skips it immediately.
+5. **Build the home page with hero, offerings, and Book Now CTA** — Compose the home route from three sections: a hero with headline, subhead, and a Book Now button (placeholder link to `#book`); an "Our Activities" grid listing Rowing, Kayaking, SUP, Wakeboarding, and Fitness; a short "Why AquaLudo" blurb. Files: `app/page.tsx`, `components/Hero.tsx`, `components/Offerings.tsx`, `components/WhyUs.tsx`. Notes: The Book Now CTA is a stub for the MVP; the activities grid can be a hardcoded array in the component.
+6. **Build the About page** — Add a route that introduces AquaLudo (Nile-based academy, mission) and lists the five activities with one-line descriptions. Files: `app/about/page.tsx`. Notes: Use the same activity list as the home grid; keep copy hardcoded, no CMS.
+7. **Build the Contact page** — Add a route with the academy address, phone number, WhatsApp link, an embedded Google Maps iframe, and opening hours. Files: `app/contact/page.tsx`. Notes: Map iframe should use the `aqualudo.net` (Maadi Nile) coordinates as a placeholder; mark phone, address, and hours as TODO constants at the top of the file.
+8. **Verify the public flow end-to-end in the browser** — Run `npm run dev`, open `http://localhost:3000` in a fresh incognito window, and walk through: splash plays once, header/footer visible, Book Now CTA scrolls or links correctly, About and Contact routes load, and reloading the tab skips the splash. Notes: Capture the verified acceptance checks below; fix any console errors before marking done.
+
+## Acceptance Criteria
+- [ ] Visiting `http://localhost:3000` in a fresh incognito window shows a full-screen water-themed splash (animated gradient + AquaLudo wordmark) that fades out within ~2 seconds and reveals the home page.
+- [ ] Reloading the same tab, or opening a new tab in the same browser session, loads the home page directly with no splash.
+- [ ] The home page shows the academy name, a one-line value proposition, a "Book Now" button as the primary CTA, and a visible grid of the five activities (Rowing, Kayaking, SUP, Wakeboarding, Fitness).
+- [ ] The header with the AquaLudo wordmark and links to Home / About / Contact is visible on every page, and clicking each link navigates without a full page reload feeling (App Router transitions).
+- [ ] The footer with address, phone, and WhatsApp link is visible on every page, and the WhatsApp link opens `https://wa.me/...` in a new tab.
+- [ ] `/about` loads and shows "Who we are" copy plus a list of the five activities with one-line descriptions each.
+- [ ] `/contact` loads and shows address, phone, WhatsApp link, opening hours, and a visible embedded Google Map of the Maadi Nile area.
+- [ ] No JavaScript errors appear in the browser console on any of the three routes after the splash has finished.

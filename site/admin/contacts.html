@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>رسايل الاتصال · لوحة التحكم</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div class="container row">
+        <a href="index.html" class="logo">
+          <span class="logo-mark"><img src="../assets/img/boat.png" alt="أكوا لودو" /></span>
+          <span>أكوا لودو · لوحة التحكم</span>
+        </a>
+        <nav>
+          <a href="index.html">الرئيسية</a>
+          <a href="bookings.html">الحجوزات</a>
+          <a href="../pages/activities.html">الأنشطة</a>
+          <a href="contacts.html" class="active">الرسايل</a>
+        </nav>
+        <div class="row">
+          <span class="who">مرحباً، Admin</span>
+          <button id="logout" class="logout">خروج</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="admin-main">
+      <div class="container">
+        <div class="admin-page-head">
+          <div>
+            <span class="eyebrow">نموذج التواصل</span>
+            <h1>رسايل الاتصال</h1>
+            <p>كل الرسايل اللي بتجيلك من صفحة "تواصل" على الموقع.</p>
+          </div>
+        </div>
+
+        <div id="list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    if (!AquaDB.admin.isAuth()) { location.href = 'admin-login.html'; }
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    document.getElementById('logout').addEventListener('click', () => { AquaDB.admin.logout(); location.href = 'admin-login.html'; });
+
+    function render() {
+      const list = AquaDB.contact.all();
+      const el = document.getElementById('list');
+      if (list.length === 0) {
+        el.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">مفيش رسايل لسه</h3><p class="muted">لما حد يبعت من الموقع، هتظهر هنا.</p></div>';
+        return;
+      }
+      el.innerHTML = list.map(c => `
+        <div class="dashboard-card">
+          <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;">
+            <div>
+              <h2 class="display" style="font-size: 1.3rem; color: var(--ink);">${c.name}</h2>
+              <p class="muted" style="font-size: 0.9rem;">${c.email} · ${new Date(c.createdAt).toLocaleString('ar-EG')}</p>
+            </div>
+            <span class="badge badge-deposit">${c.subject || 'استفسار'}</span>
+          </div>
+          <p style="color: var(--ink); line-height: 1.7;">${c.message}</p>
+          <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line-soft);">
+            <a href="mailto:${c.email}?subject=رد: ${encodeURIComponent(c.subject || '')}" class="btn btn-sm btn-primary">رد بالإيميل</a>
+          </div>
+        </div>
+      `).join('');
+    }
+    render();
+  </script>
+</body>
+</html>

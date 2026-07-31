@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>النشاط · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <main>
+    <section class="section-pad" style="padding-top: 140px;">
+      <div class="container">
+        <div class="crumbs" style="margin-bottom: 20px; color: var(--ink-soft); font-size: 0.9rem;">
+          <a href="../index.html" style="color: var(--coral);">الرئيسية</a> ·
+          <a href="activities.html" style="color: var(--coral);">الأنشطة</a> ·
+          <span id="crumb-name"></span>
+        </div>
+        <div id="detail"></div>
+
+        <div class="section-head" style="margin-top: 80px;">
+          <div class="left">
+            <span class="eyebrow">إيه اللي معانا في السيشن</span>
+            <h2 class="display section-title">هتحتاج إيه.<br />وإيه اللي علينا.</h2>
+          </div>
+        </div>
+        <div class="included-grid" id="included"></div>
+
+        <div class="section-head" style="margin-top: 80px;">
+          <div class="left">
+            <span class="eyebrow">الأسعار</span>
+            <h2 class="display section-title">كل مستويات<br />التسعير.</h2>
+          </div>
+        </div>
+        <div class="pricing-tiers" id="tiers"></div>
+
+        <div class="section-head" style="margin-top: 80px;">
+          <div class="left">
+            <span class="eyebrow">الآراء</span>
+            <h2 class="display section-title">الناس اللي جرّبت<br />السيشن ده.</h2>
+          </div>
+        </div>
+        <div id="reviews"></div>
+
+        <div class="dashboard-card text-center" style="margin-top: 60px; background: var(--ink); color: #fff; border: none;">
+          <h2 class="display" style="color: #fff; margin-bottom: 14px;">جاهز تجرّب؟</h2>
+          <p style="color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 24px;">احجز أول سيشن ليك في النشاط ده. هنأكدلك على واتساب في أقل من ساعة.</p>
+          <a id="bookBtn" href="#" class="btn btn-primary btn-lg btn-arrow">احجز أول سيشن</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader('activities');
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+    const a = AquaDB.activities.get(slug);
+
+    if (!a) {
+      document.getElementById('detail').innerHTML = `
+        <div class="timeline-tile text-center">
+          <h2 class="display" style="margin-bottom: 12px;">النشاط ده مش موجود</h2>
+          <p>يمكن الرابط غلط، أو النشاط اتشال.</p>
+          <a href="activities.html" class="btn btn-primary" style="margin-top: 20px;">شوف كل الأنشطة</a>
+        </div>
+      `;
+    } else {
+      document.title = a.name + ' · أكوا لودو';
+      document.getElementById('crumb-name').textContent = a.name;
+      document.getElementById('detail').innerHTML = `
+        <div class="activity-detail-hero">
+          <img src="${a.hero}" alt="${a.name}" />
+          <div class="info">
+            <span class="eyebrow">${a.number} — ${a.name}</span>
+            <h1>${a.tagline}</h1>
+            <p>${a.long}</p>
+            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <span class="badge badge-confirmed">ابتداءً من ${a.pricing[0].price} جنيه / ${a.pricing[0].duration}</span>
+              <span class="badge badge-archived">كل المستويات</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('included').innerHTML = `
+        <div class="included-block">
+          <h3><span class="dot green"></span> بنوفّرلك</h3>
+          <ul>${a.included.map(x => '<li>' + x + '</li>').join('')}</ul>
+        </div>
+        <div class="included-block">
+          <h3><span class="dot coral"></span> هات معاك</h3>
+          <ul>${a.bring.map(x => '<li>' + x + '</li>').join('')}</ul>
+        </div>
+      `;
+
+      document.getElementById('tiers').innerHTML = a.pricing.map(t => `
+        <div class="pricing-tier">
+          <div>
+            <h3>${t.name}</h3>
+            <p>${t.desc}</p>
+          </div>
+          <div style="text-align: left;">
+            <div class="price">${t.price} جنيه</div>
+            <small class="muted">${t.duration}</small>
+          </div>
+        </div>
+      `).join('');
+
+      const reviews = AquaDB.reviews.for(a.slug);
+      if (reviews.length === 0) {
+        document.getElementById('reviews').innerHTML = `
+          <div class="timeline-tile text-center">
+            <h3 class="display" style="margin-bottom: 8px;">كن أول واحد يكتب رأي</h3>
+            <p class="muted">جربت النشاط ده؟ سيب رأيك.</p>
+          </div>
+        `;
+      } else {
+        document.getElementById('reviews').innerHTML = reviews.map(r => `
+          <div class="review-card">
+            <div class="top">
+              <span class="who">${r.author}</span>
+              <span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+            </div>
+            <div class="body">${r.body}</div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('bookBtn').href = 'booking.html?activity=' + a.slug;
+    }
+    Aqua.reveal();
+  </script>
+</body>
+</html>

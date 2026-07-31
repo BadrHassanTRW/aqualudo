@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الإيفنت · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <main>
+    <section class="section-pad" style="padding-top: 140px;">
+      <div class="container">
+        <div class="crumbs" style="margin-bottom: 20px; color: var(--ink-soft); font-size: 0.9rem;">
+          <a href="../index.html" style="color: var(--coral);">الرئيسية</a> ·
+          <a href="events.html" style="color: var(--coral);">الإيفنتات</a> ·
+          <span id="crumb"></span>
+        </div>
+        <div id="detail"></div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader('events');
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const slug = new URLSearchParams(location.search).get('slug');
+    const e = AquaDB.events.get(slug);
+    if (!e) {
+      document.getElementById('detail').innerHTML = `
+        <div class="timeline-tile text-center">
+          <h2 class="display" style="margin-bottom: 12px;">الإيفنت ده مش موجود</h2>
+          <p>يمكن الرابط غلط، أو الإيفنت اتشال.</p>
+          <a href="events.html" class="btn btn-primary" style="margin-top: 20px;">شوف كل الإيفنتات</a>
+        </div>
+      `;
+    } else {
+      document.title = e.title + ' · أكوا لودو';
+      document.getElementById('crumb').textContent = e.title;
+      const d = new Date(e.date);
+      document.getElementById('detail').innerHTML = `
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: start; margin-bottom: 40px;">
+          <img src="${e.image}" alt="${e.title}" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--r-xl); box-shadow: var(--shadow-lg);" />
+          <div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+              <span class="badge badge-confirmed">${d.getDate()} ${AquaDB.monthName[d.getMonth()]} ${d.getFullYear()}</span>
+              <span class="badge badge-archived">${e.audience}</span>
+              ${e.price > 0 ? `<span class="badge badge-pending">${e.price} جنيه</span>` : '<span class="badge badge-confirmed">مجاني</span>'}
+            </div>
+            <span class="eyebrow">إيفنت</span>
+            <h1 class="display" style="font-size: clamp(2rem, 4.5vw, 3.5rem); line-height: 1.1; margin: 12px 0 20px; color: var(--ink);">${e.title}</h1>
+            <p class="lede" style="margin-bottom: 24px;">${e.tagline}</p>
+            <ul class="info-list" style="margin-top: 0;">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div><strong>المكان</strong>${e.location}</div>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div><strong>الموعد</strong>${e.time}</div>
+              </li>
+            </ul>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px;">
+              <a href="https://wa.me/201011329642?text=عايز%20أحجز%20في%20إيفنت%20${encodeURIComponent(e.title)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">احجز مكانك</a>
+              <a href="events.html" class="btn btn-ghost btn-lg">إيفنتات تانية</a>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-card">
+          <h2 class="display" style="margin-bottom: 16px;">إيه اللي هيحصل</h2>
+          <p style="color: var(--ink-soft); line-height: 1.7; font-size: 1.05rem;">${e.body}</p>
+        </div>
+      `;
+    }
+    Aqua.reveal();
+  </script>
+</body>
+</html>

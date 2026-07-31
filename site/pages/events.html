@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الإيفنتات · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <section class="hero-sm">
+    <div class="container">
+      <div class="crumbs"><a href="../index.html">الرئيسية</a> · الإيفنتات</div>
+      <span class="eyebrow">إيفنتات على النيل</span>
+      <h1>كل حاجة<br />في الكاليندر.</h1>
+      <p>من التحديات الرياضية للإفطارات الجماعية لغروب SUP — ده المكان اللي بنلاقي فيه بعض على المية.</p>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-head reveal">
+        <div class="left">
+          <span class="eyebrow">إيفنتات جاية</span>
+          <h2 class="display section-title">القادم.</h2>
+        </div>
+      </div>
+      <div id="upcoming"></div>
+
+      <div class="section-head reveal" style="margin-top: 80px;">
+        <div class="left">
+          <span class="eyebrow">إيفنتات فاتت</span>
+          <h2 class="display section-title">اللي فات.</h2>
+        </div>
+      </div>
+      <div id="past"></div>
+    </div>
+  </section>
+
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader('events');
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const all = AquaDB.events.all();
+    const up = all.filter(e => new Date(e.date) >= today);
+    const past = all.filter(e => new Date(e.date) < today);
+
+    function render(list, target) {
+      const el = document.getElementById(target);
+      if (list.length === 0) {
+        el.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">مفيش إيفنتات هنا لسه</h3><p class="muted">تابعنا على إنستجرام عشان أول ما ننزل إيفنت جديد.</p></div>';
+        return;
+      }
+      el.innerHTML = list.map(e => {
+        const d = new Date(e.date);
+        return `
+          <a href="event.html?slug=${e.slug}" class="event-row reveal">
+            <div class="event-date">${d.getDate()} ${AquaDB.monthName[d.getMonth()]}<small>${AquaDB.dayName[d.getDay()]}</small></div>
+            <div class="event-body">
+              <h3>${e.title}</h3>
+              <p>${e.tagline}</p>
+              <div class="event-meta">
+                <span>📍 ${e.location}</span>
+                <span>🕒 ${e.time}</span>
+                <span>👥 ${e.audience}</span>
+                ${e.price > 0 ? `<span>🎟️ ${e.price} جنيه</span>` : '<span>🎟️ مجاني</span>'}
+              </div>
+            </div>
+            <span class="btn ${e.price > 0 ? 'btn-primary' : 'btn-ghost'}" style="padding: 14px 22px; font-size: 0.9rem; ${e.price > 0 ? '' : 'color:#fff; border-color: rgba(255,255,255,0.3);'}">${e.price > 0 ? 'احجز مكان' : 'اعرف أكتر'}</span>
+          </a>
+        `;
+      }).join('');
+    }
+    render(up, 'upcoming');
+    render(past, 'past');
+    Aqua.reveal();
+  </script>
+</body>
+</html>

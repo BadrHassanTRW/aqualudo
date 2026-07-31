@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الكوتش · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <main>
+    <section class="section-pad" style="padding-top: 140px;">
+      <div class="container" style="max-width: 760px;">
+        <div id="content"></div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader();
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const token = new URLSearchParams(location.search).get('token') || 'demo-youssef';
+    const coach = AquaDB.coaches.byToken(token);
+    const content = document.getElementById('content');
+
+    if (!coach) {
+      content.innerHTML = `
+        <div class="timeline-tile text-center">
+          <h2 class="display" style="margin-bottom: 12px;">اللينك مش صحيح</h2>
+          <p class="muted">اتأكد من اللينك أو كلمنا على واتساب.</p>
+          <a href="../index.html" class="btn btn-primary" style="margin-top: 16px;">الرئيسية</a>
+        </div>
+      `;
+    } else {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+      const allSessions = AquaDB.sessions.all().filter(s => s.coachId === coach.id);
+      const todaySessions = allSessions.filter(s => {
+        const d = new Date(s.startsAt);
+        return d >= today && d < tomorrow;
+      });
+      const upcoming = allSessions.filter(s => new Date(s.startsAt) >= tomorrow).slice(0, 8);
+
+      const shareUrl = location.origin + location.pathname + '?token=' + token;
+      const icsUrl = shareUrl.replace('coach.html', 'coach-ics.html') + '.ics';
+      const icsUrlSafe = shareUrl + '&format=ics';
+
+      content.innerHTML = `
+        <div class="reveal" style="text-align: center; margin-bottom: 40px;">
+          <div style="width: 96px; height: 96px; border-radius: 50%; background-size: cover; background-position: center; margin: 0 auto 16px; background-image: url('${coach.photo}'); border: 4px solid var(--coral);"></div>
+          <span class="eyebrow">كوتش</span>
+          <h1 class="display" style="font-size: clamp(2rem, 4vw, 3rem); margin-top: 12px; color: var(--ink);">${coach.name}</h1>
+          <p class="lede">${coach.role}</p>
+        </div>
+
+        <div class="reveal">
+          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">سيشنز النهارده</h2>
+          ${todaySessions.length === 0 ? `
+            <div class="timeline-tile text-center">
+              <h3 class="display" style="margin-bottom: 8px;">مفيش سيشنز النهارده</h3>
+              <p class="muted">استمتع بيومك على المية.</p>
+            </div>
+          ` : todaySessions.map(s => {
+            const a = AquaDB.activities.getById(s.activityId);
+            const d = new Date(s.startsAt);
+            const attendees = AquaDB.bookings.all().filter(b => b.sessionId === s.id && b.status === 'confirmed');
+            return `
+              <div class="dashboard-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap;">
+                  <div style="flex: 1;">
+                    <div class="last-updated" style="margin-bottom: 6px;">${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })} · ${a ? a.name : ''}</div>
+                    <h2 class="display" style="font-size: 1.4rem; color: var(--ink); margin-bottom: 8px;">${a ? a.name : 'نشاط'} · ${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })}</h2>
+                    <p class="muted">${s.durationMin} دقيقة · ${s.booked}/${s.capacity} محجوز</p>
+                  </div>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line-soft);">
+                  <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 12px; color: var(--ink);">الحاضرين</h3>
+                  ${attendees.length === 0 ? '<p class="muted">محدش لسه.</p>' : '<div style="display: flex; flex-wrap: wrap; gap: 8px;">' + attendees.map(a => `<span class="badge badge-confirmed">${a.name}</span>`).join('') + '</div>'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="reveal" style="margin-top: 40px;">
+          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">قادمة</h2>
+          ${upcoming.length === 0 ? '<p class="muted">مفيش سيشنز قادمة.</p>' : upcoming.map(s => {
+            const a = AquaDB.activities.getById(s.activityId);
+            const d = new Date(s.startsAt);
+            return `
+              <div class="timeline-item">
+                <div class="time">${d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}<br><small style="font-weight:600; font-size:0.8rem;">${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })}</small></div>
+                <div class="info">
+                  <h4>${a ? a.name : 'نشاط'}</h4>
+                  <p>${d.toLocaleDateString('ar-EG', { weekday: 'long' })} · ${s.booked}/${s.capacity} محجوز</p>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="reveal" style="margin-top: 40px;">
+          <div class="coach-share">
+            <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">شارك اللينكات دي</h3>
+            <div class="coach-share-row">
+              <div class="label">لينك صفحتك</div>
+              <code id="shareLink">${shareUrl}</code>
+              <button class="btn btn-sm btn-ghost" id="copyLink">نسخ</button>
+            </div>
+            <div class="coach-share-row">
+              <div class="label">لينك التقويم (ICS)</div>
+              <code id="icsLink">${shareUrl}&format=ics</code>
+              <a href="${shareUrl}&format=ics" class="btn btn-sm btn-ghost">تحميل</a>
+            </div>
+            <p class="muted" style="font-size: 0.85rem; margin-top: 12px;">اللينكات دي شخصية — متشاركهاش على السوشيال ميديا.</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('copyLink').addEventListener('click', () => {
+        navigator.clipboard.writeText(shareUrl);
+        Aqua.toast('اتنسخ اللينك', 'success');
+      });
+    }
+  </script>
+</body>
+</html>

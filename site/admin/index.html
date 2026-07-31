@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div class="container row">
+        <a href="index.html" class="logo">
+          <span class="logo-mark"><img src="../assets/img/boat.png" alt="أكوا لودو" /></span>
+          <span>أكوا لودو · لوحة التحكم</span>
+        </a>
+        <nav>
+          <a href="index.html" class="active">الرئيسية</a>
+          <a href="bookings.html">الحجوزات</a>
+          <a href="../pages/activities.html">الأنشطة</a>
+          <a href="contacts.html">الرسايل</a>
+        </nav>
+        <div class="row">
+          <span class="who">مرحباً، Admin</span>
+          <button id="logout" class="logout">خروج</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="admin-main">
+      <div class="container">
+        <div class="admin-page-head">
+          <div>
+            <span class="eyebrow">نظرة عامة</span>
+            <h1>النهاردة في الأكاديمية</h1>
+            <p>الأرقام الأهم بنظرة. <span class="last-updated" id="updated">آخر تحديث: دلوقتي</span></p>
+          </div>
+          <div class="actions">
+            <button id="refresh" class="btn btn-ghost btn-arrow">تحديث</button>
+          </div>
+        </div>
+
+        <div class="admin-metrics" id="metrics"></div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
+          <div class="dashboard-card">
+            <h2>الحجوزات اللي محتاجة تأكيد</h2>
+            <div id="pending"></div>
+          </div>
+          <div class="dashboard-card">
+            <h2>إجمالي الأعضاء</h2>
+            <div id="customers-stats"></div>
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line-soft);">
+              <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">رسايل الاتصال</h3>
+              <div id="contacts-stats"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    if (!AquaDB.admin.isAuth()) { location.href = 'admin-login.html'; }
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+
+    document.getElementById('logout').addEventListener('click', () => {
+      AquaDB.admin.logout();
+      Aqua.toast('خرجت', 'success');
+      setTimeout(() => location.href = 'admin-login.html', 500);
+    });
+
+    function render() {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+      const allB = AquaDB.bookings.all();
+      const todayB = allB.filter(b => b.status === 'confirmed' && new Date(b.startAt) >= today && new Date(b.startAt) < tomorrow);
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthB = allB.filter(b => b.status === 'confirmed' && new Date(b.startAt) >= monthStart);
+
+      const priceFor = (b) => {
+        const a = AquaDB.activities.getById(b.activityId);
+        return a && a.pricing[0] ? a.pricing[0].price : 0;
+      };
+      const monthRev = monthB.reduce((sum, b) => sum + (priceFor(b) * (b.partySize || 1)), 0);
+      const todayRev = todayB.reduce((sum, b) => sum + (priceFor(b) * (b.partySize || 1)), 0);
+
+      const acts = AquaDB.activities.active();
+      const actsHTML = acts.map(a => {
+        const all = AquaDB.bookings.all().filter(b => b.activityId === a.id);
+        const conf = all.filter(b => b.status === 'confirmed').length;
+        const rev = all.filter(b => b.status === 'confirmed').reduce((s, b) => s + priceFor(b) * (b.partySize || 1), 0);
+        return `<div class="kpi-row"><div class="kpi-label">${a.name}</div><div class="kpi-value">${conf} سيشن</div><div class="kpi-value" style="color: var(--coral); font-size: 0.95rem;">${rev.toLocaleString()} ج</div></div>`;
+      }).join('');
+      document.getElementById('customers-stats').innerHTML = `
+        <div class="kpi-row"><div class="kpi-label">عدد الأعضاء</div><div class="kpi-value">${AquaDB.customers.all().length}</div></div>
+        <div class="kpi-row"><div class="kpi-label">أنشطة فعّالة</div><div class="kpi-value">${AquaDB.activities.active().length}</div></div>
+        <div class="kpi-row"><div class="kpi-label">كوتشات</div><div class="kpi-value">${AquaDB.coaches.all().length}</div></div>
+        <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin: 20px 0 12px; color: var(--ink);">إيراد الشهر حسب النشاط</h3>
+        ${actsHTML}
+      `;
+
+      const pending = allB.filter(b => b.status === 'pending').slice(0, 5);
+      const pendingHTML = pending.length === 0
+        ? '<p class="muted">مفيش حجوزات معلقة. كل حاجة متأكدة. 👏</p>'
+        : pending.map(b => {
+          const a = AquaDB.activities.getById(b.activityId);
+          const d = new Date(b.startAt);
+          return `
+            <div class="kpi-row">
+              <div class="kpi-label">
+                <strong style="color: var(--ink);">${b.name}</strong><br>
+                <small class="muted">${a ? a.name : ''} · ${d.toLocaleDateString('ar-EG')}</small>
+              </div>
+              <div><a href="bookings.html" class="btn btn-sm btn-primary">شوف</a></div>
+            </div>
+          `;
+        }).join('');
+      document.getElementById('pending').innerHTML = pendingHTML;
+
+      const contacts = AquaDB.contact.all();
+      document.getElementById('contacts-stats').innerHTML = `
+        <div class="kpi-row"><div class="kpi-label">رسايل جديدة</div><div class="kpi-value">${contacts.length}</div></div>
+        <a href="contacts.html" class="btn btn-sm btn-ghost" style="margin-top: 8px;">شوف الرسايل</a>
+      `;
+
+      document.getElementById('metrics').innerHTML = `
+        <div class="metric-card">
+          <div class="metric-label">حجوزات النهارده</div>
+          <div class="metric-value">${todayB.length}</div>
+          <div class="metric-trend">من ${allB.filter(b => b.status === 'pending' && new Date(b.startAt).toDateString() === today.toDateString()).length} معلق</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">حجوزات الشهر ده</div>
+          <div class="metric-value">${monthB.length}</div>
+          <div class="metric-trend">+${(monthB.length * 0.1).toFixed(1)} عن الشهر اللي فات</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">إيراد الشهر ده</div>
+          <div class="metric-value">EGP ${monthRev.toLocaleString()}</div>
+          <div class="metric-trend">${todayRev.toLocaleString()} جنيه النهارده</div>
+        </div>
+      `;
+
+      const now = new Date();
+      document.getElementById('updated').textContent = 'آخر تحديث: ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    document.getElementById('refresh').addEventListener('click', () => { render(); Aqua.toast('اتحدثت', 'success'); });
+    render();
+  </script>
+</body>
+</html>

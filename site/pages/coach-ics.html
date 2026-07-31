@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>ICS Feed</title>
+</head>
+<body>
+<script src="../assets/js/db.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const token = params.get('token');
+if (params.get('format') === 'ics' && token) {
+  const coach = AquaDB.coaches.byToken(token);
+  if (!coach) {
+    document.body.textContent = 'Not found';
+  } else {
+    const sessions = AquaDB.sessions.all().filter(s => s.coachId === coach.id);
+    const fmt = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    let ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AquaLudo//Coach Panel//AR', 'CALSCALE:GREGORIAN'];
+    sessions.forEach(s => {
+      const a = AquaDB.activities.getById(s.activityId);
+      const start = new Date(s.startsAt);
+      const end = new Date(start.getTime() + s.durationMin * 60000);
+      const attendees = AquaDB.bookings.all().filter(b => b.sessionId === s.id && b.status === 'confirmed');
+      ics.push('BEGIN:VEVENT');
+      ics.push('UID:' + s.id + '@aqualudo.net');
+      ics.push('DTSTAMP:' + fmt(new Date()));
+      ics.push('DTSTART:' + fmt(start));
+      ics.push('DTEND:' + fmt(end));
+      ics.push('SUMMARY:' + (a ? a.name : 'AquaLudo session'));
+      ics.push('LOCATION:AquaLudo\\, 114 Nile St\\, Dokki\\, Giza');
+      ics.push('DESCRIPTION:' + (attendees.length || 0) + ' attendees');
+      ics.push('END:VEVENT');
+    });
+    ics.push('END:VCALENDAR');
+    const text = ics.join('\r\n');
+    const blob = new Blob([text], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'coach-' + coach.id + '.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    document.body.innerHTML = '<p style="font-family: sans-serif; padding: 40px; text-align: center;">جارٍ التحميل... ارجع لصفحة الكوتش.</p>';
+    setTimeout(() => location.href = 'coach.html?token=' + token, 1500);
+  }
+}
+</script>
+</body>
+</html>

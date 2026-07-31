@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الأنشطة · لوحة التحكم</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div class="container row">
+        <a href="index.html" class="logo">
+          <span class="logo-mark"><img src="../assets/img/boat.png" alt="أكوا لودو" /></span>
+          <span>أكوا لودو · لوحة التحكم</span>
+        </a>
+        <nav>
+          <a href="index.html">الرئيسية</a>
+          <a href="bookings.html">الحجوزات</a>
+          <a href="../pages/activities.html" class="active">الأنشطة</a>
+          <a href="contacts.html">الرسايل</a>
+        </nav>
+        <div class="row">
+          <span class="who">مرحباً، Admin</span>
+          <button id="logout" class="logout">خروج</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="admin-main">
+      <div class="container">
+        <div class="admin-page-head">
+          <div>
+            <span class="eyebrow">كل الأنشطة</span>
+            <h1>الأنشطة</h1>
+            <p>عدّل، ضيف، أو أرشفة الأنشطة اللي بتظهر على الموقع.</p>
+          </div>
+          <div class="actions">
+            <button id="toggleAdd" class="btn btn-primary">+ نشاط جديد</button>
+          </div>
+        </div>
+
+        <div id="addForm" style="display: none; margin-bottom: 24px;">
+          <div class="admin-card">
+            <h2>نشاط جديد</h2>
+            <form id="newAct" class="admin-form">
+              <div class="form-row">
+                <div class="field"><label>الاسم (عربي)</label><input type="text" id="na-name" required /></div>
+                <div class="field"><label>الـ slug (عربي في اللينك)</label><input type="text" id="na-slug" required placeholder="مثال: rowing" /></div>
+              </div>
+              <div class="form-row">
+                <div class="field"><label>الجملة التسويقية</label><input type="text" id="na-tagline" required placeholder="جملة قصيرة وجذابة" /></div>
+                <div class="field"><label>لينك الصورة</label><input type="url" id="na-hero" required placeholder="https://..." /></div>
+              </div>
+              <div class="form-row three">
+                <div class="field"><label>السعر (جنيه)</label><input type="number" id="na-price" required min="0" /></div>
+                <div class="field"><label>المدة</label><input type="text" id="na-duration" required value="ساعة" /></div>
+                <div class="field"><label>رقم العرض</label><input type="text" id="na-number" required placeholder="06" /></div>
+              </div>
+              <div class="field"><label>الوصف</label><textarea id="na-long" required></textarea></div>
+              <div class="form-actions">
+                <button type="button" id="cancelAdd" class="btn btn-ghost">إلغاء</button>
+                <button type="submit" class="btn btn-primary">احفظ النشاط</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="editForm" style="display: none; margin-bottom: 24px;"></div>
+
+        <div id="list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    if (!AquaDB.admin.isAuth()) { location.href = 'admin-login.html'; }
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    document.getElementById('logout').addEventListener('click', () => { AquaDB.admin.logout(); location.href = 'admin-login.html'; });
+
+    document.getElementById('toggleAdd').addEventListener('click', () => {
+      document.getElementById('addForm').style.display = document.getElementById('addForm').style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('cancelAdd').addEventListener('click', () => { document.getElementById('addForm').style.display = 'none'; });
+
+    document.getElementById('newAct').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('na-name').value.trim(),
+        slug: document.getElementById('na-slug').value.trim().toLowerCase(),
+        tagline: document.getElementById('na-tagline').value.trim(),
+        hero: document.getElementById('na-hero').value.trim(),
+        long: document.getElementById('na-long').value.trim(),
+        number: document.getElementById('na-number').value.trim(),
+        pricing: [{ name: 'عادي', desc: 'سيشن ساعة', price: parseInt(document.getElementById('na-price').value) || 0, duration: document.getElementById('na-duration').value.trim() }],
+        included: ['كل المعدات', 'كوتش معاك'],
+        bring: ['هدوم سباحة', 'كريم شمس'],
+      };
+      if (!data.name || !data.slug) { Aqua.toast('دخّل الاسم والـ slug', 'error'); return; }
+      AquaDB.activities.create(data);
+      document.getElementById('newAct').reset();
+      document.getElementById('addForm').style.display = 'none';
+      Aqua.toast('اتضاف النشاط', 'success');
+      render();
+    });
+
+    function render() {
+      const all = AquaDB.activities.all();
+      const list = document.getElementById('list');
+      if (all.length === 0) {
+        list.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">مفيش أنشطة</h3></div>';
+        return;
+      }
+      list.innerHTML = all.map(a => {
+        const minPrice = a.pricing && a.pricing[0] ? a.pricing[0].price : 0;
+        const sched = AquaDB.schedules.for(a.id);
+        return `
+          <div class="activity-row">
+            <div class="left">
+              <div class="thumb" style="background-image: url('${a.hero}')"></div>
+              <div class="info">
+                <h3>${a.name} <span style="color: var(--coral); font-weight: 800; font-size: 0.8rem;">${a.active ? 'فعّال' : 'مؤرشف'}</span></h3>
+                <p>${a.tagline} · ${sched.length} ميعاد أسبوعي · من ${minPrice} جنيه</p>
+              </div>
+            </div>
+            <div class="right">
+              ${a.active ? `<button class="btn btn-sm btn-ghost" data-archive="${a.id}">أرشف</button>` : `<button class="btn btn-sm btn-success" data-restore="${a.id}">رجّعه</button>`}
+              <button class="btn btn-sm btn-ghost" data-edit="${a.id}">عدّل</button>
+              <a href="../pages/activity.html?slug=${a.slug}" target="_blank" class="btn btn-sm btn-light">شوف</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.querySelectorAll('[data-archive]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.archive(b.dataset.archive); Aqua.toast('اتأرشف', 'success'); render(); }));
+      list.querySelectorAll('[data-restore]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.update(b.dataset.restore, { active: true }); Aqua.toast('اترجّع', 'success'); render(); }));
+      list.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEdit(b.dataset.edit)));
+    }
+
+    function openEdit(id) {
+      const a = AquaDB.activities.getById(id);
+      if (!a) return;
+      const sched = AquaDB.schedules.for(id);
+      const form = document.getElementById('editForm');
+      form.style.display = 'block';
+      form.innerHTML = `
+        <div class="admin-card">
+          <h2>تعديل: ${a.name}</h2>
+          <form id="editAct" class="admin-form">
+            <div class="form-row">
+              <div class="field"><label>الاسم</label><input type="text" id="e-name" value="${a.name}" required /></div>
+              <div class="field"><label>الجملة التسويقية</label><input type="text" id="e-tagline" value="${a.tagline}" required /></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>لينك الصورة</label><input type="url" id="e-hero" value="${a.hero}" required /></div>
+              <div class="field"><label>السعر الأساسي (جنيه)</label><input type="number" id="e-price" value="${a.pricing[0] ? a.pricing[0].price : 0}" required min="0" /></div>
+            </div>
+            <div class="field"><label>الوصف</label><textarea id="e-long" required>${a.long}</textarea></div>
+            <h3>المواعيد الأسبوعية</h3>
+            <div id="slots"></div>
+            <button type="button" id="addSlot" class="btn btn-sm btn-ghost" style="margin-top: 8px;">+ أضف ميعاد</button>
+            <div class="form-actions" style="margin-top: 24px;">
+              <button type="button" id="cancelEdit" class="btn btn-ghost">إلغاء</button>
+              <button type="submit" class="btn btn-primary">احفظ التعديلات</button>
+            </div>
+          </form>
+        </div>
+      `;
+      form.scrollIntoView({ behavior: 'smooth' });
+
+      const slotsEl = document.getElementById('slots');
+      function renderSlots() {
+        slotsEl.innerHTML = sched.map((s, i) => `
+          <div class="schedule-slot">
+            <div class="field">
+              <label>اليوم</label>
+              <select data-slot-idx="${i}" data-slot-field="day">
+                ${['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map((d, di) => `<option value="${di}" ${di === s.day ? 'selected' : ''}>${d}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field"><label>من</label><input type="time" value="${s.start}" data-slot-idx="${i}" data-slot-field="start" /></div>
+            <div class="field"><label>لـ</label><input type="time" value="${s.end}" data-slot-idx="${i}" data-slot-field="end" /></div>
+            <div class="field"><label>السعة</label><input type="number" min="1" value="${s.capacity}" data-slot-idx="${i}" data-slot-field="capacity" /></div>
+            <button type="button" class="btn btn-sm btn-danger" data-rm="${i}">حذف</button>
+          </div>
+        `).join('');
+        slotsEl.querySelectorAll('[data-slot-idx]').forEach(inp => {
+          inp.addEventListener('change', () => {
+            const i = +inp.dataset.slotIdx;
+            const f = inp.dataset.slotField;
+            sched[i][f] = f === 'day' || f === 'capacity' ? +inp.value : inp.value;
+          });
+        });
+        slotsEl.querySelectorAll('[data-rm]').forEach(btn => {
+          btn.addEventListener('click', () => { sched.splice(+btn.dataset.rm, 1); renderSlots(); });
+        });
+      }
+      renderSlots();
+      document.getElementById('addSlot').addEventListener('click', () => { sched.push({ day: 0, start: '09:00', end: '10:00', capacity: 6 }); renderSlots(); });
+      document.getElementById('cancelEdit').addEventListener('click', () => { form.style.display = 'none'; });
+
+      document.getElementById('editAct').addEventListener('submit', (e) => {
+        e.preventDefault();
+        AquaDB.activities.update(id, {
+          name: document.getElementById('e-name').value.trim(),
+          tagline: document.getElementById('e-tagline').value.trim(),
+          hero: document.getElementById('e-hero').value.trim(),
+          long: document.getElementById('e-long').value.trim(),
+          pricing: [{ name: a.pricing[0] ? a.pricing[0].name : 'عادي', desc: a.pricing[0] ? a.pricing[0].desc : 'سيشن ساعة', price: parseInt(document.getElementById('e-price').value) || 0, duration: a.pricing[0] ? a.pricing[0].duration : 'ساعة' }],
+        });
+        AquaDB.schedules.set(id, sched);
+        Aqua.toast('اتحفظ', 'success');
+        form.style.display = 'none';
+        render();
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

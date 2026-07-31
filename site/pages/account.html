@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حسابي · أكوا لودو</title>
+  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body class="loading">
+  <div id="splash-root"></div>
+  <div id="header-root"></div>
+
+  <main>
+    <section class="section-pad" style="padding-top: 140px;">
+      <div class="container">
+        <div class="admin-page-head reveal">
+          <div>
+            <span class="eyebrow">حسابي</span>
+            <h1 id="greeting">أهلاً بيك!</h1>
+            <p>حجوزاتك، البروفايل بتاعك، وكل اللي محتاج تعرفه.</p>
+          </div>
+          <div class="actions">
+            <a href="account-profile.html" class="btn btn-ghost">البروفايل</a>
+            <button id="signOut" class="btn btn-dark">خروج</button>
+          </div>
+        </div>
+
+        <div class="tab-bar" id="tabs">
+          <button class="tab active" data-tab="upcoming">القادمة</button>
+          <button class="tab" data-tab="past">اللي فات</button>
+        </div>
+
+        <div id="upcoming-pane">
+          <div id="upcoming-list"></div>
+        </div>
+        <div id="past-pane" style="display: none;">
+          <div id="past-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-root"></div>
+
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader();
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    document.body.classList.add('loading');
+    Aqua.runSplash();
+    Aqua.bindHeader();
+    Aqua.reveal();
+
+    const s = AquaDB.session.get();
+    if (!s) { location.href = 'sign-in.html'; }
+    const customer = AquaDB.customers.get(s.customerId);
+    if (!customer) { AquaDB.session.clear(); location.href = 'sign-in.html'; }
+
+    document.getElementById('greeting').textContent = 'أهلاً، ' + customer.name.split(' ')[0] + '!';
+
+    function renderList(bookings, target, empty) {
+      const el = document.getElementById(target);
+      if (bookings.length === 0) {
+        el.innerHTML = `
+          <div class="timeline-tile text-center">
+            <h3 class="display" style="margin-bottom: 8px;">${empty.title}</h3>
+            <p class="muted" style="margin-bottom: 20px;">${empty.subtitle}</p>
+            <a href="booking.html" class="btn btn-primary">احجز سيشن</a>
+          </div>
+        `;
+        return;
+      }
+      el.innerHTML = bookings.map(b => {
+        const act = AquaDB.activities.getById(b.activityId);
+        const d = new Date(b.startAt);
+        const date = d.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
+        const time = d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' });
+        const isUpcoming = d > new Date() && b.status !== 'cancelled';
+        const statusBadge = b.status === 'confirmed' ? '<span class="badge badge-confirmed">مؤكدة</span>' : b.status === 'cancelled' ? '<span class="badge badge-cancelled">ملغية</span>' : '<span class="badge badge-pending">قيد التأكيد</span>';
+        return `
+          <div class="booking-card ${b.status === 'cancelled' ? 'cancelled' : ''}">
+            <div class="left">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1"/><path d="M19 12V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <div>
+                <h3>${act ? act.name : 'نشاط'}</h3>
+                <p>${date} · ${time}</p>
+                ${b.notes ? `<p style="font-size: 0.8rem; color: var(--ink-mute); margin-top: 4px;">${b.notes}</p>` : ''}
+              </div>
+            </div>
+            <div class="right">
+              ${statusBadge}
+              ${isUpcoming ? `<button class="btn btn-sm btn-ghost" data-cancel="${b.id}">إلغاء</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      el.querySelectorAll('[data-cancel]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-cancel');
+          const b = AquaDB.bookings.get(id);
+          if (!b) return;
+          const start = new Date(b.startAt);
+          const now = new Date();
+          const hoursLeft = (start - now) / (1000 * 60 * 60);
+          if (hoursLeft < 24) {
+            Aqua.toast('السيشن جاية قريب — كلمنا على واتساب للإلغاء', 'error');
+            return;
+          }
+          if (!confirm('متأكد عايز تلغي السيشن دي؟')) return;
+          AquaDB.bookings.cancel(id);
+          Aqua.toast('اتلغت السيشن', 'success');
+          render();
+        });
+      });
+    }
+
+    function render() {
+      const all = AquaDB.bookings.forCustomer(customer.id);
+      const upcoming = all.filter(b => new Date(b.startAt) >= new Date() && b.status !== 'cancelled');
+      const past = all.filter(b => new Date(b.startAt) < new Date() || b.status === 'cancelled');
+      renderList(upcoming, 'upcoming-list', { title: 'مفيش حجوزات جاية', subtitle: 'احجز سيشنك الجاية وهتظهر هنا.' });
+      renderList(past, 'past-list', { title: 'مفيش حجوزات قديمة', subtitle: 'لما تتمرّن، حجوزاتك هتظهر هنا.' });
+    }
+    render();
+
+    document.querySelectorAll('#tabs .tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('#tabs .tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const tab = t.getAttribute('data-tab');
+        document.getElementById('upcoming-pane').style.display = tab === 'upcoming' ? 'block' : 'none';
+        document.getElementById('past-pane').style.display = tab === 'past' ? 'block' : 'none';
+      });
+    });
+
+    document.getElementById('signOut').addEventListener('click', () => {
+      AquaDB.session.clear();
+      Aqua.toast('خرجت من حسابك', 'success');
+      setTimeout(() => location.href = 'sign-in.html', 600);
+    });
+  </script>
+</body>
+</html>

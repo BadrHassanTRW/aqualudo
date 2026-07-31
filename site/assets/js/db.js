@@ -1,0 +1,528 @@
+(function (global) {
+  const K = {
+    activities: 'aqualudo_db_activities',
+    schedules: 'aqualudo_db_schedules',
+    sessions: 'aqualudo_db_sessions',
+    bookings: 'aqualudo_db_bookings',
+    customers: 'aqualudo_db_customers',
+    reviews: 'aqualudo_db_reviews',
+    events: 'aqualudo_db_events',
+    coaches: 'aqualudo_db_coaches',
+    packages: 'aqualudo_db_packages',
+    memberships: 'aqualudo_db_memberships',
+    codes: 'aqualudo_db_auth_codes',
+    contact: 'aqualudo_db_contact_leads',
+    session: 'aqualudo_session',
+    admin: 'aqualudo_admin_session',
+    splash: 'aqualudo_splash_seen',
+    seeded: 'aqualudo_seeded_v1',
+  };
+  const ADMIN_PASSWORD = 'aqualudo2026';
+
+  const read = (k, d) => {
+    try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; }
+  };
+  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const today = () => new Date().toISOString().slice(0, 10);
+  const now = () => new Date().toISOString();
+
+  const ART_PALETTES = {
+    rowing:    { sky: '#F4E9D8', sun: '#FF5A3C', deep: '#0B2434', wave: '#0F6F94' },
+    kayaking:  { sky: '#FFE9D6', sun: '#FF8E5C', deep: '#0B2434', wave: '#0F6F94' },
+    sup:       { sky: '#FFF0E1', sun: '#FFB087', deep: '#0B2434', wave: '#0F6F94' },
+    wake:      { sky: '#FFE0D0', sun: '#FF6B3C', deep: '#0B2434', wave: '#0F6F94' },
+    fit:       { sky: '#F4E9D8', sun: '#FF5A3C', deep: '#0B2434', wave: '#0F6F94' },
+  };
+
+  const AVATAR_PALETTES = [
+    { bg: '#FF5A3C', fg: '#FFF8F0' },
+    { bg: '#0B2434', fg: '#FFF8F0' },
+    { bg: '#0F6F94', fg: '#FFF8F0' },
+    { bg: '#F4E9D8', fg: '#0B2434' },
+  ];
+  function buildAvatar(name) {
+    const parts = name.split(' ');
+    const initials = (parts[0]?.[0] || '') + (parts[1]?.[0] || '');
+    const p = AVATAR_PALETTES[Math.abs(name.charCodeAt(0)) % AVATAR_PALETTES.length];
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+      <defs>
+        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stop-color='${p.bg}'/>
+          <stop offset='100%' stop-color='${p.bg}' stop-opacity='0.7'/>
+        </linearGradient>
+      </defs>
+      <rect width='200' height='200' fill='url(#g)'/>
+      <text x='100' y='118' text-anchor='middle' font-family='Cairo, sans-serif' font-weight='900' font-size='80' fill='${p.fg}'>${initials}</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  function buildEventArt(slug, title) {
+    const palettes = {
+      'run-row-challenge': { sky: '#FFE0D0', sun: '#FF5A3C', accent: '#0B2434' },
+      'sunset-paddle':     { sky: '#FFD3B0', sun: '#FF8E5C', accent: '#0B2434' },
+      'nationals-regatta-2026': { sky: '#F4E9D8', sun: '#FF5A3C', accent: '#0B2434' },
+      'ramadan-iftar':     { sky: '#1A0F2E', sun: '#FFD080', accent: '#FFD080' },
+    };
+    const p = palettes[slug] || palettes['sunset-paddle'];
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMid slice'>
+      <defs>
+        <linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0%' stop-color='${p.sky}'/>
+          <stop offset='100%' stop-color='${p.sun}' stop-opacity='0.4'/>
+        </linearGradient>
+        <radialGradient id='sun' cx='0.65' cy='0.6' r='0.3'>
+          <stop offset='0%' stop-color='${p.sun}'/>
+          <stop offset='100%' stop-color='${p.sun}' stop-opacity='0'/>
+        </radialGradient>
+      </defs>
+      <rect width='1200' height='700' fill='url(#sky)'/>
+      <rect width='1200' height='700' fill='url(#sun)'/>
+      <circle cx='780' cy='450' r='90' fill='${p.sun}' opacity='0.85'/>
+      <g stroke='${p.accent}' stroke-opacity='0.2' stroke-width='2' fill='none'>
+        <path d='M0 500 Q200 480 400 500 T800 500 T1200 500'/>
+        <path d='M0 540 Q200 520 400 540 T800 540 T1200 540'/>
+        <path d='M0 580 Q200 560 400 580 T800 580 T1200 580'/>
+      </g>
+      <g transform='translate(600, 540)'>
+        <ellipse cx='0' cy='0' rx='80' ry='12' fill='${p.accent}' opacity='0.4'/>
+        <path d='M-70 -8 L70 -8 L60 8 L-60 8 Z' fill='${p.accent}' opacity='0.85'/>
+      </g>
+      <g font-family='Cairo, sans-serif' font-weight='900' fill='${p.accent}'>
+        <text x='60' y='160' font-size='160' opacity='0.08'>${title.slice(0, 2)}</text>
+      </g>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  const ART_ICONS = {
+    rowing: '<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"><line x1="100" y1="380" x2="700" y2="380"/><line x1="400" y1="380" x2="400" y2="350"/><line x1="380" y1="360" x2="420" y2="360"/><ellipse cx="400" cy="375" rx="35" ry="5"/><path d="M250 280 Q400 220 550 280"/><circle cx="400" cy="180" r="6" fill="currentColor"/></g>',
+    kayaking: '<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"><path d="M250 360 Q400 320 550 360 L540 380 Q400 360 260 380 Z"/><line x1="350" y1="340" x2="500" y2="260"/><line x1="480" y1="270" x2="510" y2="290"/><circle cx="350" cy="330" r="8" fill="currentColor"/></g>',
+    sup: '<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"><ellipse cx="400" cy="380" rx="160" ry="14"/><line x1="400" y1="380" x2="400" y2="240"/><circle cx="400" cy="220" r="14" fill="currentColor"/><line x1="395" y1="220" x2="370" y2="280"/><line x1="405" y1="220" x2="430" y2="280"/><line x1="400" y1="240" x2="350" y2="160"/><ellipse cx="350" cy="155" rx="6" ry="20" fill="currentColor"/></g>',
+    wake: '<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"><path d="M150 360 L250 340 L280 380 L150 380 Z"/><line x1="250" y1="340" x2="450" y2="280"/><circle cx="450" cy="280" r="10" fill="currentColor"/><line x1="445" y1="280" x2="420" y2="220"/><line x1="455" y1="280" x2="480" y2="220"/><line x1="450" y1="280" x2="430" y2="350"/></g>',
+    fit: '<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"><circle cx="300" cy="320" r="20"/><line x1="300" y1="340" x2="300" y2="380"/><line x1="280" y1="350" x2="320" y2="350"/><line x1="300" y1="380" x2="280" y2="400"/><line x1="300" y1="380" x2="320" y2="400"/><line x1="350" y1="350" x2="500" y2="350"/><line x1="500" y1="350" x2="540" y2="320"/><line x1="500" y1="350" x2="540" y2="380"/></g>',
+  };
+  function buildArt(icon, label) {
+    const p = ART_PALETTES[icon] || ART_PALETTES.rowing;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450' preserveAspectRatio='xMidYMid slice'>
+      <defs>
+        <linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0%' stop-color='${p.sky}'/>
+          <stop offset='60%' stop-color='#FFF8F0'/>
+          <stop offset='100%' stop-color='${p.wave}'/>
+        </linearGradient>
+        <radialGradient id='sun' cx='0.7' cy='0.25' r='0.35'>
+          <stop offset='0%' stop-color='${p.sun}' stop-opacity='0.7'/>
+          <stop offset='100%' stop-color='${p.sun}' stop-opacity='0'/>
+        </radialGradient>
+        <pattern id='ripple' x='0' y='0' width='40' height='12' patternUnits='userSpaceOnUse'>
+          <path d='M0 6 Q10 0 20 6 T40 6' fill='none' stroke='${p.wave}' stroke-opacity='0.3' stroke-width='1.5'/>
+        </pattern>
+      </defs>
+      <rect width='800' height='450' fill='url(#sky)'/>
+      <rect width='800' height='450' fill='url(#sun)'/>
+      <circle cx='640' cy='120' r='40' fill='${p.sun}'/>
+      <g transform='translate(0, 30)'>
+        <g color='${p.deep}' opacity='0.85'>${ART_ICONS[icon] || ART_ICONS.rowing}</g>
+      </g>
+      <rect x='0' y='340' width='800' height='110' fill='url(#ripple)'/>
+      <g font-family='Cairo, sans-serif' font-weight='900' fill='${p.deep}'>
+        <text x='40' y='80' font-size='90' opacity='0.1'>${label}</text>
+      </g>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  const seedActivities = [
+    {
+      id: 'act-rowing', slug: 'rowing', name: 'التجديف', number: '01',
+      tagline: 'ابني تكنيك وقوة وفريق.',
+      short: 'اتعلم تكنيك وتوازن وقوة تحمل مع كوتشات معتمدين على شلز تجديف احترافية.',
+      long: 'التجديف هو السبب اللي اتأسس بيه أكوا لودو. فريقنا من الكوتشات المعتمدين هيوصلك على المية ويخليك تعمل أول جربة كويسة من أول سيشن. بنشتغل في مجموعات متدرجة — On Boarding للمبتدئين، Foundation للفضوليين، Performance للرياضيين، وElite لفريقنا التنافسي. كل المعدات علينا، والجزء بتاعنا في النيل من أهدى وأأمن الأماكن اللي تتعلم فيها في القاهرة.',
+      hero: buildArt('rowing', '01'),
+      icon: 'rowing',
+      pricing: [
+        { name: 'On Boarding', desc: 'سيشن إجباري للمبتدئين كلهم.', price: 200, duration: 'ساعة' },
+        { name: 'Foundation', desc: 'ابني الأساس. جربة ورا جربة.', price: 200, duration: 'ساعة' },
+        { name: 'Performance', desc: 'للمجتهدين. قوة وسرعة وتكنيك.', price: 200, duration: 'ساعة' },
+        { name: 'Elite', desc: 'تجديف تنافسي عالي الكثافة.', price: 200, duration: 'ساعة' },
+        { name: 'خاص 1-على-1', desc: 'كوتشنج شخصي، إنت وكوتش بس.', price: 400, duration: 'ساعة' },
+      ],
+      included: ['القارب والمجاديف', 'كوتش معاك على المية', 'جاكيت إنقاذ', 'مية معبأة'],
+      bring: ['هدوم سباحة أو سريعة الجفاف', 'كريم شمس', 'فوطة', 'صندل ممكن يتبّل'],
+      active: true,
+    },
+    {
+      id: 'act-kayaking', slug: 'kayaking', name: 'الكياك', number: '02',
+      tagline: 'اتجول على النيل.',
+      short: 'استكشف النيل في سيشنز كياك ترفيهية أو تمرينية بإشراف كوتش.',
+      long: 'مفيش حاجة زي إنك تكون كام سنتي فوق المية في كياك وبتعدي جنب المدينة. السيشنز بتاعتنا متقسمة بين "كياك للمتعة" — أسهل طريقة تقع في حب الرياضة — و"Flatwater Training" للي عايز تكنيك وقوة تحمل ويفضل ينضم لجروب البادلس الأسبوعي بتاعنا على النيل.',
+      hero: buildArt('kayaking', '02'),
+      icon: 'kayak',
+      pricing: [
+        { name: 'كياك للمتعة', desc: 'كياك ترفيهي على النيل لكل الناس.', price: 130, duration: 'ساعة' },
+        { name: 'Flatwater Training', desc: 'تكنيك وقوة تحمل.', price: 120, duration: 'ساعة' },
+      ],
+      included: ['كياك فردي أو مزدوج', 'بادل وجاكيت', 'مسار بإشراف كوتش', 'مية معبأة'],
+      bring: ['هدوم سباحة أو سريعة الجفاف', 'كريم شمس', 'فوطة', 'هدوم تانية'],
+      active: true,
+    },
+    {
+      id: 'act-sup', slug: 'sup', name: 'Stand-Up Paddle (SUP)', number: '03',
+      tagline: 'توازن وكور.',
+      short: 'قوّي عضلاتك الوسطى وتوازنك واستمتع بوقفتك على المية في سيشنز الشروق والغروب.',
+      long: 'SUP هي أسهل رياضة تبدأ بيها. في عشر دقايق من ما تقف على البورد لأول مرة لأول جربة كويسة. بنعمل سيشنز شروق وغروب على أهدى جزء في النيل، وكوتشاتنا شغلهم جامد في إنهم يخلوا المبتدئ يقوم ويبادل بسرعة.',
+      hero: buildArt('sup', '03'),
+      icon: 'sup',
+      pricing: [
+        { name: 'سيشن SUP', desc: 'ساعة على المية مع كوتش.', price: 350, duration: 'ساعة' },
+        { name: 'غروب SUP', desc: 'أكتر سيشن بنعملها. الساعة الذهبية على النيل.', price: 350, duration: 'ساعة' },
+      ],
+      included: ['بورد وبادل', 'كوتش على المية', 'جاكيت إنقاذ', 'صور من سيشنتك'],
+      bring: ['هدوم سباحة أو سريعة الجفاف', 'كريم شمس', 'فوطة', 'هدوم تانية'],
+      active: true,
+    },
+    {
+      id: 'act-wakeboard', slug: 'wakeboard', name: 'ويك بورد', number: '04',
+      tagline: 'أدرينالين خالص.',
+      short: 'سيشنز سحب بالقارب لبطلين عايزين يقفزوا ويقطعوا موج النيل.',
+      long: 'الويك بورد عندنا بيتم ورا قارب سكاي حقيقي، مع كوتش في المية معاك في أول رايدز. المبتدئين بيبدأوا بحبل أطول وبتتقدم بسرعة. عندنا العدة، والقارب، والصبر. كل اللي محتاجه شوية شجاعة واستعداد تتبّل.',
+      hero: buildArt('wake', '04'),
+      icon: 'wake',
+      pricing: [
+        { name: 'ويك بورد مبتدئ', desc: 'أول رايدز ورا القارب. بنبدأك بحبل أطول.', price: 1800, duration: '30 دقيقة' },
+        { name: 'ويك بورد محترف', desc: 'كافس وقفز وحركات. للمحترفين.', price: 1800, duration: '30 دقيقة' },
+      ],
+      included: ['قارب وسواق', 'بورد وجاكيت', 'خوذة', 'كوتش في المية معاك'],
+      bring: ['هدوم سباحة', 'كريم شمس', 'فوطة', 'هدوم تانية', 'كفر موبايل مقاوم للماية لو عندك'],
+      active: true,
+    },
+    {
+      id: 'act-fitness', slug: 'fitness', name: 'فتنس على المية', number: '05',
+      tagline: 'أقوى كل يوم.',
+      short: 'قوة وتحمل ومرونة مصممة للرياضات المائية وأسلوب حياة نشيط.',
+      long: 'برنامج الفتنس بتاعنا معمول بواسطة تجدّافين، لكل الناس. قوة وتكييف بدني مصمم على الرياضات المائية اللي بتحبها — ضهر أقوى، وقفة أحسن، استشفاء أسرع. بنخلّط تمارين وزن الجسم و bands و drills جماعية. الجروب زي رياضة جماعية، والسيشنز الخاصة متظبطة على أهدافك.',
+      hero: buildArt('fit', '05'),
+      icon: 'fit',
+      pricing: [
+        { name: 'فتنس جماعي', desc: 'سيشن جروب في الهوا الطلق. كل المستويات.', price: 150, duration: 'ساعة' },
+        { name: 'تدريب شخصي', desc: '1-على-1 متظبط عليك.', price: 400, duration: 'ساعة' },
+      ],
+      included: ['كل المعدات', 'سيشن بإشراف كوتش', 'مية', 'استشفاء واسترتش'],
+      bring: ['شبشب رياضي أو جزمة رياضية', 'فوطة', 'زجاجة مية', 'طاقة إيجابية'],
+      active: true,
+    },
+  ];
+
+  const seedSchedules = [
+    { id: uid(), activityId: 'act-rowing', day: 1, start: '06:00', end: '08:00', capacity: 8 },
+    { id: uid(), activityId: 'act-rowing', day: 3, start: '06:00', end: '08:00', capacity: 8 },
+    { id: uid(), activityId: 'act-rowing', day: 5, start: '17:00', end: '19:00', capacity: 8 },
+    { id: uid(), activityId: 'act-kayaking', day: 2, start: '09:00', end: '11:00', capacity: 6 },
+    { id: uid(), activityId: 'act-kayaking', day: 4, start: '16:00', end: '18:00', capacity: 6 },
+    { id: uid(), activityId: 'act-kayaking', day: 6, start: '08:00', end: '10:00', capacity: 6 },
+    { id: uid(), activityId: 'act-sup', day: 0, start: '06:00', end: '07:30', capacity: 4 },
+    { id: uid(), activityId: 'act-sup', day: 5, start: '18:00', end: '19:30', capacity: 4 },
+    { id: uid(), activityId: 'act-wakeboard', day: 4, start: '14:00', end: '17:00', capacity: 3 },
+    { id: uid(), activityId: 'act-fitness', day: 1, start: '19:00', end: '20:00', capacity: 10 },
+    { id: uid(), activityId: 'act-fitness', day: 3, start: '19:00', end: '20:00', capacity: 10 },
+  ];
+
+  const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  function buildSeedSessions() {
+    const out = [];
+    const acts = read(K.activities);
+    for (let i = 0; i < 14; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i + 1);
+      const dow = d.getDay();
+      const matching = read(K.schedules).filter(s => s.day === dow);
+      for (const s of matching) {
+        const act = acts.find(a => a.id === s.activityId);
+        if (!act) continue;
+        const [hh, mm] = s.start.split(':').map(Number);
+        const starts = new Date(d);
+        starts.setHours(hh, mm, 0, 0);
+        if (starts < new Date()) continue;
+        out.push({
+          id: uid(),
+          activityId: act.id,
+          coachId: 'coach-1',
+          startsAt: starts.toISOString(),
+          durationMin: 60,
+          capacity: s.capacity,
+          booked: 0,
+          status: 'scheduled',
+        });
+      }
+    }
+    return out;
+  }
+
+  const seedCoaches = [
+    { id: 'coach-1', name: 'يوسف السيد', role: 'الكوتش الرئيسي · تجديف', token: 'demo-youssef', active: true, photo: buildAvatar('يوسف السيد'), bio: 'أكتر من 10 سنين على النيل. درّب لاعبين وصلوا يتنافسوا على المستوى الوطني.' },
+    { id: 'coach-2', name: 'سلمى هاني', role: 'كوتش · كياك و SUP', token: 'demo-salma', active: true, photo: buildAvatar('سلمى هاني'), bio: 'هادية وواضحة، شغلها جامد مع المبتدئين. أول سيشن معاها هتحس إنها ميت سيشن.' },
+    { id: 'coach-3', name: 'عمر فاروق', role: 'كوتش · ويك بورد', token: 'demo-omar', active: true, photo: buildAvatar('عمر فاروق'), bio: 'بطل ويك بورد قدام. عايش اللحظة اللي بتقوم فيها على البورد لأول مرة.' },
+    { id: 'coach-4', name: 'نور حسن', role: 'كوتش · فتنس', token: 'demo-nour', active: true, photo: buildAvatar('نور حسن'), bio: 'كوتش قوة بيظبط كل برنامج على الرياضة المائية اللي بتحبها.' },
+  ];
+
+  const seedCustomers = [
+    { id: 'cust-salma', name: 'سلمى عقل', email: 'salma@example.com', phone: '+201234567891', createdAt: now() },
+    { id: 'cust-farida', name: 'فريدة محمد', email: 'farida@example.com', phone: '+201234567892', createdAt: now() },
+    { id: 'cust-andrew', name: 'أندرو عزت', email: 'andrew@example.com', phone: '+201234567893', createdAt: now() },
+  ];
+
+  const seedReviews = [
+    { id: uid(), activitySlug: 'rowing', rating: 5, author: 'سلمى عقل', body: 'التجديف هنا بقى مكان بيعالجني. الكوتشات داعمين، والنيل حاجة تانية وقت الشروق.', approved: true, createdAt: now() },
+    { id: uid(), activitySlug: 'rowing', rating: 5, author: 'أندرو عزت', body: 'جيت لتريال واحد وفضلت سنتين. كوميونتي حقيقية، كوتشنج حقيقي.', approved: true, createdAt: now() },
+    { id: uid(), activitySlug: 'kayaking', rating: 5, author: 'فريدة محمد', body: 'أنصح جداً بسيشنز الكياك. آمنة جداً، الفريق لطيف، وبيشرحولك كل حاجة.', approved: true, createdAt: now() },
+    { id: uid(), activitySlug: 'sup', rating: 5, author: 'نسمة ك.', body: 'سيشن الغروب جميلة جداً. سلمى خلّتنا نقوم على البوردز في خمس دقايق. اتعلقّينا.', approved: true, createdAt: now() },
+    { id: uid(), activitySlug: 'wakeboard', rating: 5, author: 'حسن م.', body: 'عمر أسطورة. خلاني أقوم على الويك بورد من المحاولة التانية. يستاهل كل قرش.', approved: true, createdAt: now() },
+    { id: uid(), activitySlug: 'fitness', rating: 5, author: 'يارا ط.', body: 'برنامج نور هو السبب إني بجدّف من غير وجع ضهر. بعد ست شهور حاسس إني شخص تاني.', approved: true, createdAt: now() },
+  ];
+
+  const seedEvents = [
+    { id: 'evt-runrow', slug: 'run-row-challenge', title: 'تحدي الركض والتجديف', date: '2026-07-31', time: '07:30 — 10:30 الصبح', location: 'أكوا لودو، الدقي', image: buildEventArt('run-row-challenge', 'تحدي'), tagline: 'ادّى نفسك على البر والميه. تحدي واحد. اتنين رياضة. أنت جاهز؟', body: 'جاهز تختبر نفسك؟ انضم لأكوا لودو في تحدي فتنس حماسي بيجمع بين قدرة الركض وقوة التجديف. سواء كنت جديد على الرياضة ولا رياضي عنده خبرة، تحدي Run & Row معمول عشان يختبر قوتك وعزيمتك وشغلك الجماعي في جو ممتع وداعم.', audience: 'مفتوح للكل', price: 250 },
+    { id: 'evt-sunset', slug: 'sunset-paddle', title: 'غروب SUP على النيل', date: '2026-08-22', time: '06:00 — 08:00 بليل', location: 'أكوا لودو، الدقي', image: buildEventArt('sunset-paddle', 'غروب'), tagline: 'سهرة SUP، الساعة الذهبية، ونور المدينة بييجي.', body: 'مفيش أحلى من إنك تقضي آخر الأسبوع في القاهرة على المية وقت الغروب. خد صاحبك، ابدل معانا على النيل، وشوف المدينة بتنوّر. كوتشات وموسيقى على المية، تصوير متضمن.', audience: 'مفتوح للكل', price: 400 },
+    { id: 'evt-regatta', slug: 'nationals-regatta-2026', title: 'ريجيتا الوطني 2026', date: '2026-09-12', time: '07:00 — 11:00 الصبح', location: 'أكوا لودو، الدقي', image: buildEventArt('nationals-regatta-2026', 'ريجيتا'), tagline: 'تجدّافينا المحترفين بياخدوا على مصر كلها.', body: 'أكبر يوم في الكاليندر بتاعنا. تجدّافينا الـ Elite والـ Performance بيشاركوا أحسن لاعيبة البلد، على المية اللي تمرّنوا عليها سنين. تعالى شارك، تعالى شجّع، تعالى شوف مستقبل التجديف في مصر.', audience: 'للأعضاء بس', price: 0 },
+    { id: 'evt-iftar', slug: 'ramadan-iftar', title: 'إفطار جماعي على النيل', date: '2026-03-27', time: '07:00 — 11:00 بليل', location: 'أكوا لودو، الدقي', image: buildEventArt('ramadan-iftar', 'إفطار'), tagline: 'نفطر مع الفريق، على المية، تحت نور المدينة.', body: 'إفطارنا السنوي. هات عيلتك وصحابك ومعدة فاضية. فريق أكوا لودو هيكون على المية بالفوانيس والأكل وأحرّ ترحيب في القاهرة.', audience: 'مفتوح للكل', price: 350 },
+  ];
+
+  const seedPackages = [
+    { id: 'pkg-starter', name: 'ستارتر', price: 130, scope: 'سيشن واحد', desc: 'سيشن ساعة واحد، على أي نشاط. مثالي لأول مرة على المية.', benefits: ['سيشن ساعة', 'كل المعدات علينا', 'كوتش معاك على المية', 'أي يوم في الأسبوع'], featured: false },
+    { id: 'pkg-crew', name: 'باكج الرفيق', price: 1400, scope: '9 سيشنز', desc: '8 سيشنز، زائد 1 بونص. أسرع طريقة تبقى كويس فعلاً في حاجة على المية.', benefits: ['9 سيشنز إجمالاً (1 علينا)', 'استخدمها على أي نشاط', 'صالحة 3 شهور', 'كاب وزجاجة أكوا لودو هدية', 'أولوية في الحجز'], featured: true, badge: 'الأكثر حباً' },
+    { id: 'pkg-unlimited', name: 'غير محدود', price: 1800, scope: 'شهرياً', desc: 'تمرّن كل يوم. أحسن حاجة للتجدّافين بتوعنا والناس اللي بتقع في الحب من أول يوم.', benefits: ['سيشنز غير محدودة طول الشهر', 'تمرين جماعي أسبوعي', '10% خصم على الإيفنتس والرحلات', 'برنامج تدريبي شخصي', 'جروب واتساب للأعضاء'], featured: false },
+  ];
+
+  const seedMemberships = [
+    { id: 'mem-bronze', name: 'برونز', price: 600, scope: 'شهرياً', desc: '4 سيشنز في الشهر. التزام خفيف.', benefits: ['4 سيشنز في الشهر', 'أي نشاط', 'إيفنتات الأعضاء بس', 'مية مجاناً'], featured: false },
+    { id: 'mem-silver', name: 'سيلفر', price: 1100, scope: 'شهرياً', desc: '8 سيشنز في الشهر. أكتر واحدة بنبيعها.', benefits: ['8 سيشنز في الشهر', 'أي نشاط', '10% خصم ويك بورد', 'مراجعة تقدم شهرية', 'عدة أكوا لودو هدية'], featured: true, badge: 'أحسن قيمة' },
+    { id: 'mem-gold', name: 'جولد', price: 1800, scope: 'شهرياً', desc: 'كل حاجة غير محدودة. للأعضاء الأكتر التزاماً عندنا.', benefits: ['سيشنز غير محدودة', 'إيفنتات غير محدودة', 'كوتش شخصي على الواتساب', 'مراجعة أهداف ربع سنوية', 'هات صاحبك مرتين في الشهر'], featured: false },
+  ];
+
+  const seedBookings = [
+    { id: 'bk-1', customerId: 'cust-salma', sessionId: 'seed', activityId: 'act-rowing', name: 'Salma Akl', phone: '+201234567891', notes: '', status: 'confirmed', payment: 'paid', partySize: 1, startAt: new Date(Date.now() + 86400000 * 2).toISOString(), createdAt: now(), decidedAt: now() },
+    { id: 'bk-2', customerId: 'cust-farida', sessionId: 'seed', activityId: 'act-kayaking', name: 'Farida Mohamed', phone: '+201234567892', notes: 'First time, very excited!', status: 'pending', payment: 'unpaid', partySize: 2, startAt: new Date(Date.now() + 86400000 * 3).toISOString(), createdAt: now() },
+    { id: 'bk-3', customerId: 'cust-andrew', sessionId: 'seed', activityId: 'act-sup', name: 'Andrew Ezzat', phone: '+201234567893', notes: 'Sunset session please', status: 'pending', payment: 'unpaid', partySize: 1, startAt: new Date(Date.now() + 86400000 * 5).toISOString(), createdAt: now() },
+    { id: 'bk-4', customerId: 'cust-salma', sessionId: 'seed', activityId: 'act-wakeboard', name: 'Salma Akl', phone: '+201234567891', notes: '', status: 'confirmed', payment: 'deposit_paid', partySize: 1, startAt: new Date(Date.now() - 86400000 * 4).toISOString(), createdAt: now(), decidedAt: now() },
+    { id: 'bk-5', customerId: 'cust-farida', sessionId: 'seed', activityId: 'act-rowing', name: 'Farida Mohamed', phone: '+201234567892', notes: '', status: 'confirmed', payment: 'paid', partySize: 1, startAt: new Date(Date.now() - 86400000 * 10).toISOString(), createdAt: now(), decidedAt: now() },
+    { id: 'bk-6', customerId: 'cust-andrew', sessionId: 'seed', activityId: 'act-rowing', name: 'Andrew Ezzat', phone: '+201234567893', notes: '', status: 'cancelled', payment: 'refunded', partySize: 1, startAt: new Date(Date.now() - 86400000 * 2).toISOString(), createdAt: now(), decidedAt: now() },
+  ];
+
+  function seed() {
+    if (read(K.seeded)) return;
+    write(K.activities, seedActivities);
+    write(K.schedules, seedSchedules);
+    write(K.coaches, seedCoaches);
+    write(K.customers, seedCustomers);
+    write(K.reviews, seedReviews);
+    write(K.events, seedEvents);
+    write(K.packages, seedPackages);
+    write(K.memberships, seedMemberships);
+    write(K.bookings, seedBookings);
+    write(K.sessions, buildSeedSessions());
+    write(K.seeded, true);
+  }
+
+  const DB = {
+    init: seed,
+    reset: () => {
+      Object.values(K).forEach(k => localStorage.removeItem(k));
+      seed();
+    },
+
+    dayName, monthName, ADMIN_PASSWORD,
+    buildArt, buildAvatar, buildEventArt,
+
+    activities: {
+      all: () => read(K.activities, []),
+      active: () => read(K.activities, []).filter(a => a.active),
+      get: (slug) => read(K.activities, []).find(a => a.slug === slug),
+      getById: (id) => read(K.activities, []).find(a => a.id === id),
+      create: (data) => {
+        const a = read(K.activities);
+        const next = { id: 'act-' + uid(), active: true, pricing: [], included: [], bring: [], ...data };
+        a.push(next); write(K.activities, a); return next;
+      },
+      update: (id, data) => {
+        const a = read(K.activities);
+        const i = a.findIndex(x => x.id === id);
+        if (i < 0) return null;
+        a[i] = { ...a[i], ...data }; write(K.activities, a); return a[i];
+      },
+      archive: (id) => {
+        const a = read(K.activities);
+        const i = a.findIndex(x => x.id === id);
+        if (i < 0) return;
+        a[i].active = false; write(K.activities, a);
+      },
+    },
+
+    schedules: {
+      for: (activityId) => read(K.schedules).filter(s => s.activityId === activityId),
+      set: (activityId, slots) => {
+        const all = read(K.schedules).filter(s => s.activityId !== activityId);
+        const fresh = slots.map(s => ({ id: s.id || uid(), activityId, ...s }));
+        write(K.schedules, [...all, ...fresh]);
+      },
+    },
+
+    sessions: {
+      upcoming: () => read(K.sessions, []).filter(s => s.status === 'scheduled' && new Date(s.startsAt) > new Date()).sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt)),
+      all: () => read(K.sessions, []).sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt)),
+      get: (id) => read(K.sessions, []).find(s => s.id === id),
+      create: (data) => {
+        const a = read(K.sessions, []);
+        const next = { id: 'ses-' + uid(), status: 'scheduled', booked: 0, ...data };
+        a.push(next); write(K.sessions, a); return next;
+      },
+      remove: (id) => write(K.sessions, read(K.sessions, []).filter(s => s.id !== id)),
+    },
+
+    bookings: {
+      all: () => read(K.bookings, []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+      get: (id) => read(K.bookings, []).find(b => b.id === id),
+      forCustomer: (customerId) => read(K.bookings, []).filter(b => b.customerId === customerId),
+      today: () => {
+        const t = today();
+        return read(K.bookings, []).filter(b => b.startAt && b.startAt.slice(0, 10) === t);
+      },
+      thisMonth: () => {
+        const d = new Date();
+        const m = d.getMonth(), y = d.getFullYear();
+        return read(K.bookings, []).filter(b => {
+          const bd = new Date(b.startAt);
+          return bd.getMonth() === m && bd.getFullYear() === y;
+        });
+      },
+      create: (data) => {
+        const a = read(K.bookings, []);
+        const next = { id: 'bk-' + uid(), status: 'pending', payment: 'unpaid', partySize: 1, createdAt: now(), ...data };
+        a.push(next); write(K.bookings, a); return next;
+      },
+      update: (id, data) => {
+        const a = read(K.bookings, []);
+        const i = a.findIndex(x => x.id === id);
+        if (i < 0) return null;
+        a[i] = { ...a[i], ...data }; write(K.bookings, a); return a[i];
+      },
+      confirm: (id) => {
+        const a = read(K.bookings, []);
+        const i = a.findIndex(x => x.id === id);
+        if (i < 0) return;
+        a[i].status = 'confirmed'; a[i].decidedAt = now(); write(K.bookings, a);
+      },
+      cancel: (id) => {
+        const a = read(K.bookings, []);
+        const i = a.findIndex(x => x.id === id);
+        if (i < 0) return;
+        a[i].status = 'cancelled'; a[i].decidedAt = now(); write(K.bookings, a);
+      },
+    },
+
+    customers: {
+      all: () => read(K.customers, []),
+      get: (id) => read(K.customers, []).find(c => c.id === id),
+      findByEmail: (email) => read(K.customers, []).find(c => c.email && c.email.toLowerCase() === email.toLowerCase()),
+      findByPhone: (phone) => read(K.customers, []).find(c => c.phone && c.phone === phone),
+      findOrCreate: (data) => {
+        const a = read(K.customers, []);
+        let c = a.find(x => x.email && data.email && x.email.toLowerCase() === data.email.toLowerCase());
+        if (c) return c;
+        c = { id: 'cust-' + uid(), createdAt: now(), ...data };
+        a.push(c); write(K.customers, a); return c;
+      },
+    },
+
+    authCodes: {
+      create: (email) => {
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        const a = read(K.codes, []);
+        a.push({ id: uid(), email: email.toLowerCase(), code, expiresAt: Date.now() + 10 * 60 * 1000, used: false });
+        write(K.codes, a);
+        return code;
+      },
+      verify: (email, code) => {
+        const a = read(K.codes, []);
+        const c = a.find(x => x.email === email.toLowerCase() && x.code === code && !x.used && x.expiresAt > Date.now());
+        if (!c) return false;
+        c.used = true; write(K.codes, a);
+        return true;
+      },
+    },
+
+    session: {
+      set: (customerId) => { write(K.session, { customerId, since: now() }); },
+      get: () => read(K.session),
+      clear: () => { localStorage.removeItem(K.session); },
+    },
+
+    reviews: {
+      for: (slug) => read(K.reviews, []).filter(r => r.activitySlug === slug && r.approved).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+      create: (data) => {
+        const a = read(K.reviews, []);
+        const next = { id: uid(), approved: true, createdAt: now(), ...data };
+        a.push(next); write(K.reviews, a); return next;
+      },
+    },
+
+    events: {
+      all: () => read(K.events, []).sort((a, b) => new Date(a.date) - new Date(b.date)),
+      upcoming: () => read(K.events, []).filter(e => new Date(e.date) >= new Date(today())).sort((a, b) => new Date(a.date) - new Date(b.date)),
+      get: (slug) => read(K.events, []).find(e => e.slug === slug),
+      create: (data) => {
+        const a = read(K.events, []);
+        const next = { id: 'evt-' + uid(), ...data };
+        a.push(next); write(K.events, a); return next;
+      },
+      remove: (id) => write(K.events, read(K.events, []).filter(e => e.id !== id)),
+    },
+
+    coaches: {
+      all: () => read(K.coaches, []),
+      get: (id) => read(K.coaches, []).find(c => c.id === id),
+      byToken: (token) => read(K.coaches, []).find(c => c.token === token && c.active),
+    },
+
+    packages: { all: () => read(K.packages, []) },
+    memberships: { all: () => read(K.memberships, []) },
+
+    admin: {
+      login: (password) => {
+        if (password !== ADMIN_PASSWORD) return false;
+        write(K.admin, { since: now() });
+        return true;
+      },
+      logout: () => { localStorage.removeItem(K.admin); },
+      isAuth: () => !!read(K.admin),
+    },
+
+    contact: {
+      create: (data) => {
+        const a = read(K.contact, []);
+        const next = { id: uid(), createdAt: now(), ...data };
+        a.push(next); write(K.contact, a); return next;
+      },
+      all: () => read(K.contact, []),
+    },
+
+    formatEGP: (n) => 'EGP ' + Number(n).toLocaleString('en-EG', { minimumFractionDigits: 0 }),
+    formatDate: (iso) => {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    },
+    formatDateShort: (iso) => {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    },
+    formatTime: (iso) => {
+      const d = new Date(iso);
+      return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    },
+  };
+
+  global.AquaDB = DB;
+  DB.init();
+})(window);

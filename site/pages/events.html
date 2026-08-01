@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>الإيفنتات · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -25,6 +25,10 @@
 
   <section class="section-pad">
     <div class="container">
+      <div class="row reveal" style="margin-bottom: 28px; gap: 10px;">
+        <button type="button" data-qb="1" class="qa-chip">+ احجز سيشن</button>
+      </div>
+
       <div class="section-head reveal">
         <div class="left">
           <span class="eyebrow">إيفنتات جاية</span>
@@ -71,7 +75,7 @@
         const d = new Date(e.date);
         return `
           <a href="event.html?slug=${e.slug}" class="event-row reveal">
-            <div class="event-date">${d.getDate()} ${AquaDB.monthName[d.getMonth()]}<small>${AquaDB.dayName[d.getDay()]}</small></div>
+            <div class="event-date">${d.getDate()} ${AquaDB.monthName[d.getMonth()]}${' '}<small>${AquaDB.dayName[d.getDay()]}</small></div>
             <div class="event-body">
               <h3>${e.title}</h3>
               <p>${e.tagline}</p>

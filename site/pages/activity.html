@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>النشاط · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -51,7 +51,10 @@
         <div class="dashboard-card text-center" style="margin-top: 60px; background: var(--ink); color: #fff; border: none;">
           <h2 class="display" style="color: #fff; margin-bottom: 14px;">جاهز تجرّب؟</h2>
           <p style="color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 24px;">احجز أول سيشن ليك في النشاط ده. هنأكدلك على واتساب في أقل من ساعة.</p>
-          <a id="bookBtn" href="#" class="btn btn-primary btn-lg btn-arrow">احجز أول سيشن</a>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+            <a id="bookBtn" href="#" class="btn btn-primary btn-lg btn-arrow">احجز أول سيشن</a>
+            <button id="quickBookBtn" type="button" class="btn btn-ghost btn-lg">احجز سريع (مودال)</button>
+          </div>
         </div>
       </div>
     </section>
@@ -144,6 +147,13 @@
       }
 
       document.getElementById('bookBtn').href = 'booking.html?activity=' + a.slug;
+
+      const quickBookBtn = document.getElementById('quickBookBtn');
+      if (quickBookBtn) {
+        quickBookBtn.addEventListener('click', () => {
+          Aqua.openQuickBook({ activityId: a.id });
+        });
+      }
     }
     Aqua.reveal();
   </script>

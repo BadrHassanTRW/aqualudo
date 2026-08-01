@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>الأنشطة · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -25,6 +25,25 @@
 
   <section class="section-pad">
     <div class="container">
+      <div class="section-head reveal" style="margin-bottom: 28px;">
+        <div class="left">
+          <span class="eyebrow">فلترة سريعة</span>
+          <h2 class="display" style="font-size: clamp(1.6rem, 3vw, 2.4rem);">اختار رياضتك.</h2>
+        </div>
+        <div class="row" style="gap: 10px;">
+          <button type="button" data-qb="1" class="btn btn-primary">+ احجز سيشن</button>
+        </div>
+      </div>
+
+      <div class="filter-pills reveal" id="filterPills">
+        <button type="button" class="filter-pill active" data-slug-filter="all">الكل</button>
+        <button type="button" class="filter-pill" data-slug-filter="rowing">تجديف</button>
+        <button type="button" class="filter-pill" data-slug-filter="kayaking">كياك</button>
+        <button type="button" class="filter-pill" data-slug-filter="sup">SUP</button>
+        <button type="button" class="filter-pill" data-slug-filter="wake">ويك بورد</button>
+        <button type="button" class="filter-pill" data-slug-filter="fit">فتنس</button>
+      </div>
+
       <div class="activities-grid" id="grid"></div>
     </div>
   </section>
@@ -43,7 +62,7 @@
     Aqua.reveal();
 
     document.getElementById('grid').innerHTML = AquaDB.activities.active().map((a, i) => `
-      <a class="activity-card ${i === 0 ? 'large' : 'small'} reveal" href="activity.html?slug=${a.slug}">
+      <a class="activity-card ${i === 0 ? 'large' : 'small'} reveal" href="activity.html?slug=${a.slug}" data-slug="${a.slug}">
         <img src="${a.hero}" alt="${a.name}" />
         <div class="overlay"></div>
         <div class="meta">
@@ -53,7 +72,26 @@
         </div>
       </a>
     `).join('');
+
+    Aqua.bindActivityQuickView();
     Aqua.reveal();
+
+    (function bindFilters() {
+      const pills = document.querySelectorAll('#filterPills .filter-pill');
+      const grid = document.getElementById('grid');
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          const filter = pill.getAttribute('data-slug-filter');
+          grid.querySelectorAll('.activity-card').forEach(card => {
+            const slug = card.getAttribute('data-slug');
+            const show = filter === 'all' || slug === filter;
+            card.style.display = show ? '' : 'none';
+          });
+        });
+      });
+    })();
   </script>
 </body>
 </html>

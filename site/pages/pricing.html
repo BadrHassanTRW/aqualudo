@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>الأسعار · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -78,7 +78,7 @@
         <div class="price-card-price">${p.price.toLocaleString()}<small>جنيه · ${p.scope}</small></div>
         <p class="price-card-desc">${p.desc}</p>
         <ul class="price-card-list">${p.benefits.map(b => '<li>' + b + '</li>').join('')}</ul>
-        <a href="booking.html" class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">${p.featured ? 'انضم للرفيق' : 'ابدأ دلوقتي'}</a>
+        <button type="button" data-qb="1" class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">${p.featured ? 'انضم للرفيق' : 'ابدأ دلوقتي'}</button>
       </div>
     `).join('');
 
@@ -89,7 +89,7 @@
         <div class="price-card-price">${m.price.toLocaleString()}<small>جنيه · ${m.scope}</small></div>
         <p class="price-card-desc">${m.desc}</p>
         <ul class="price-card-list">${m.benefits.map(b => '<li>' + b + '</li>').join('')}</ul>
-        <a href="booking.html" class="btn ${m.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">اشترك دلوقتي</a>
+        <button type="button" data-qb="1" class="btn ${m.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">اشترك دلوقتي</button>
       </div>
     `).join('');
 

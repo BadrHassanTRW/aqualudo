@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة التحكم · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -12,72 +12,64 @@
 </head>
 <body class="loading">
   <div id="splash-root"></div>
-  <div class="admin-shell">
-    <div class="admin-topbar">
-      <div class="container row">
-        <a href="index.html" class="logo">
-          <span class="logo-mark"><img src="../assets/img/boat.png" alt="أكوا لودو" /></span>
-          <span>أكوا لودو · لوحة التحكم</span>
-        </a>
-        <nav>
-          <a href="index.html" class="active">الرئيسية</a>
-          <a href="bookings.html">الحجوزات</a>
-          <a href="../pages/activities.html">الأنشطة</a>
-          <a href="contacts.html">الرسايل</a>
-        </nav>
-        <div class="row">
-          <span class="who">مرحباً، Admin</span>
-          <button id="logout" class="logout">خروج</button>
-        </div>
+  <div id="adm-page-wrap">
+    <div class="admin-page-head">
+      <div>
+        <span class="eyebrow">نظرة عامة</span>
+        <h1>النهاردة في الأكاديمية</h1>
+        <p>الأرقام الأهم بنظرة. <span class="last-updated" id="updated">آخر تحديث: دلوقتي</span></p>
+      </div>
+      <div class="actions">
+        <button id="refresh" class="btn btn-ghost btn-arrow">تحديث</button>
       </div>
     </div>
 
-    <main class="admin-main">
-      <div class="container">
-        <div class="admin-page-head">
-          <div>
-            <span class="eyebrow">نظرة عامة</span>
-            <h1>النهاردة في الأكاديمية</h1>
-            <p>الأرقام الأهم بنظرة. <span class="last-updated" id="updated">آخر تحديث: دلوقتي</span></p>
-          </div>
-          <div class="actions">
-            <button id="refresh" class="btn btn-ghost btn-arrow">تحديث</button>
-          </div>
-        </div>
+    <div class="admin-metrics" id="metrics"></div>
 
-        <div class="admin-metrics" id="metrics"></div>
-
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
-          <div class="dashboard-card">
-            <h2>الحجوزات اللي محتاجة تأكيد</h2>
-            <div id="pending"></div>
-          </div>
-          <div class="dashboard-card">
-            <h2>إجمالي الأعضاء</h2>
-            <div id="customers-stats"></div>
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line-soft);">
-              <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">رسايل الاتصال</h3>
-              <div id="contacts-stats"></div>
-            </div>
-          </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
+      <div class="dashboard-card">
+        <h2>الحجوزات اللي محتاجة تأكيد</h2>
+        <div id="pending"></div>
+      </div>
+      <div class="dashboard-card">
+        <h2>إجمالي الأعضاء</h2>
+        <div id="customers-stats"></div>
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line-soft);">
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">رسايل الاتصال</h3>
+          <div id="contacts-stats"></div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <script src="../assets/js/db.js"></script>
   <script src="../assets/js/app.js"></script>
   <script>
-    if (!AquaDB.admin.isAuth()) { location.href = 'admin-login.html'; }
+    if (typeof AquaDB !== 'undefined' && AquaDB.admin && !AquaDB.admin.isAuth()) {
+      location.href = 'admin-login.html';
+    }
     document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
     document.body.classList.add('loading');
     Aqua.runSplash();
-
-    document.getElementById('logout').addEventListener('click', () => {
-      AquaDB.admin.logout();
-      Aqua.toast('خرجت', 'success');
-      setTimeout(() => location.href = 'admin-login.html', 500);
-    });
+    const wrap = document.getElementById('adm-page-wrap');
+    const pageContent = wrap.innerHTML;
+    const root = document.createElement('div');
+    root.id = 'admin-shell-root';
+    wrap.parentNode.replaceChild(root, wrap);
+    root.innerHTML = Aqua.renderAdminShell();
+    document.getElementById('admMain').innerHTML = pageContent;
+    Aqua.bindAdminShell();
+    const quick = document.getElementById('admQuick');
+    if (quick) {
+      quick.innerHTML = `
+        <a class="btn btn-ghost" href="bookings.html">الحجوزات</a>
+        <a class="btn btn-ghost" href="activities.html">الأنشطة</a>
+        <a class="btn btn-ghost" href="contacts.html">الرسايل</a>
+        <button class="btn btn-primary" type="button" data-qb="1">+ حجز جديد</button>
+      `;
+    }
+    Aqua.bindGlobal();
+    Aqua.bindActivityQuickView();
 
     function render() {
       const today = new Date(); today.setHours(0,0,0,0);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>حسابي · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
             <p>حجوزاتك، البروفايل بتاعك، وكل اللي محتاج تعرفه.</p>
           </div>
           <div class="actions">
+            <a href="booking.html" class="qa-chip coral">+ احجز سيشن جديد</a>
             <a href="account-profile.html" class="btn btn-ghost">البروفايل</a>
             <button id="signOut" class="btn btn-dark">خروج</button>
           </div>
@@ -70,7 +71,10 @@
           <div class="timeline-tile text-center">
             <h3 class="display" style="margin-bottom: 8px;">${empty.title}</h3>
             <p class="muted" style="margin-bottom: 20px;">${empty.subtitle}</p>
-            <a href="booking.html" class="btn btn-primary">احجز سيشن</a>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <a href="booking.html" class="btn btn-primary">احجز سيشن</a>
+              <button type="button" data-qb="1" class="btn btn-ghost">أو احجز سريع في مودال</button>
+            </div>
           </div>
         `;
         return;

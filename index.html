@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>أكوا لودو · جدّف على النيل</title>
   <meta name="description" content="أكوا لودو — بيتك في القاهرة للتجديف، الكياك، SUP، ويك بورد، وفتنس على المية." />
-  <link rel="icon" href="site/assets/img/boat.png" type="image/png" />
+  <link rel="icon" href="site/assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
   <main>
 
     <section class="hero" id="hero">
+      <video class="hero-video" src="site/assets/video/hero.mp4" poster="site/assets/img/site/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
       <div class="hero-bg-boat"><img src="site/assets/img/boat.png" alt="" /></div>
       <div class="container">
         <div class="hero-grid">
@@ -34,6 +35,24 @@
             <div class="hero-actions">
               <a href="site/pages/booking.html" class="btn btn-primary btn-lg btn-arrow">احجز أول سيشن ليك</a>
               <a href="site/pages/activities.html" class="btn btn-ghost btn-lg">شوف الأنشطة</a>
+            </div>
+            <div class="hero-actions-extra">
+              <button type="button" class="qa-chip" data-qb="1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                احجز سريع
+              </button>
+              <a href="site/pages/events.html" class="qa-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+                الإيفنتات الجاية
+              </a>
+              <a href="site/pages/pricing.html" class="qa-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5"/></svg>
+                الباكدجز
+              </a>
+              <a href="https://wa.me/201011329642" target="_blank" rel="noopener" class="qa-chip">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z"/></svg>
+                واتساب
+              </a>
             </div>
             <div class="hero-trust">
               <div class="avatars"><span></span><span></span><span></span><span></span></div>
@@ -273,7 +292,7 @@
 
     (function () {
       const heroArt = document.getElementById('hero-art');
-      if (heroArt) heroArt.src = AquaDB.buildArt('sup', '03');
+      if (heroArt) heroArt.src = AquaDB.photo('sup') || AquaDB.buildArt('sup', '03');
 
       const acts = AquaDB.activities.active();
       const actsEl = document.getElementById('home-activities');
@@ -289,6 +308,7 @@
           </div>
         </a>
       `).join('');
+      Aqua.bindActivityQuickView();
 
       const cEl = document.getElementById('home-coaches');
       cEl.innerHTML = AquaDB.coaches.all().map(c => `

@@ -88,7 +88,46 @@ const checks = [
   ['pricing', '/site/pages/pricing.html', `(() => { return { cards: document.querySelectorAll('.price-card').length }; })()`],
   ['admin', '/site/admin/index.html', `(() => { return { shell: !!document.querySelector('.adm-shell'), metrics: document.querySelectorAll('.metric-card').length }; })()`],
   ['admin-bookings', '/site/admin/bookings.html', `(() => { return { shell: !!document.querySelector('.adm-shell'), rows: document.querySelectorAll('tbody tr, .booking-row').length }; })()`],
+  ['about', '/site/pages/about.html', `(() => { return { title: document.title }; })()`],
+  ['contact', '/site/pages/contact.html', `(() => { return { title: document.title }; })()`],
+  ['events', '/site/pages/events.html', `(() => { return { title: document.title }; })()`],
+  ['event', '/site/pages/event.html?slug=run-the-nile', `(() => { return { title: document.title }; })()`],
+  ['account', '/site/pages/account.html', `(() => { return { title: document.title }; })()`],
+  ['account-profile', '/site/pages/account-profile.html', `(() => { return { title: document.title }; })()`],
+  ['sign-in', '/site/pages/sign-in.html', `(() => { return { title: document.title }; })()`],
+  ['404', '/site/pages/404.html', `(() => { return { title: document.title }; })()`],
+  ['coach', '/site/pages/coach.html', `(() => { return { title: document.title }; })()`],
+  ['admin-login', '/site/admin/login.html', `(() => { return { title: document.title }; })()`],
+  ['admin-activities', '/site/admin/activities.html', `(() => { return { shell: !!document.querySelector('.adm-shell') }; })()`],
+  ['admin-contacts', '/site/admin/contacts.html', `(() => { return { shell: !!document.querySelector('.adm-shell') }; })()`],
 ];
+
+async function linkCheck(cdp, url) {
+  const r = await cdp.send('Runtime.evaluate', {
+    returnByValue: true,
+    expression: `(() => {
+      const seen = new Set();
+      const out = [];
+      document.querySelectorAll('a[href]').forEach(a => {
+        const abs = new URL(a.getAttribute('href'), location.href);
+        if (abs.origin !== location.origin || a.target === '_blank') return;
+        const key = abs.pathname.replace(/\\/$/, '');
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push(key);
+      });
+      return out;
+    })()`,
+  });
+  const results = [];
+  for (const p of (r.result.value || [])) {
+    try {
+      const res = await fetch(`http://127.0.0.1:${PORT}${p}`);
+      if (res.status >= 400) results.push(`${res.status} ${p}`);
+    } catch { results.push(`ERR ${p}`); }
+  }
+  return results;
+}
 
 for (const [name, url, expr] of checks) {
   cdp.errors = [];
@@ -96,6 +135,8 @@ for (const [name, url, expr] of checks) {
   await new Promise(res => cdp.on('Page.loadEventFired', () => res()));
   await sleep(120);
   const r = await cdp.send('Runtime.evaluate', { returnByValue: true, expression: expr });
+  const links = await linkCheck(cdp, url);
+  for (const l of links) cdp.errors.push('LINK ' + l);
   const ok = !cdp.errors.length;
   console.log(`[${ok ? 'OK ' : 'ERR'}] ${name.padEnd(16)} ${JSON.stringify(r.result.value)}${cdp.errors.length ? '  ' + cdp.errors.join(' | ') : ''}`);
 }

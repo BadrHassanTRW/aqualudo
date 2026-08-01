@@ -59,11 +59,12 @@
     Aqua.reveal();
 
     const s = AquaDB.session.get();
-    if (!s) { location.href = 'sign-in.html'; }
-    const customer = AquaDB.customers.get(s.customerId);
-    if (!customer) { AquaDB.session.clear(); location.href = 'sign-in.html'; }
-
-    document.getElementById('greeting').textContent = 'أهلاً، ' + customer.name.split(' ')[0] + '!';
+    if (!s) { location.replace('sign-in.html'); }
+    else {
+      const customer = AquaDB.customers.get(s.customerId);
+      if (!customer) { AquaDB.session.clear(); location.replace('sign-in.html'); }
+      else {
+        document.getElementById('greeting').textContent = 'أهلاً، ' + customer.name.split(' ')[0] + '!';
 
     function renderList(bookings, target, empty) {
       const el = document.getElementById(target);
@@ -151,6 +152,8 @@
       Aqua.toast('خرجت من حسابك', 'success');
       setTimeout(() => location.href = 'sign-in.html', 600);
     });
+      }
+    }
   </script>
 </body>
 </html>

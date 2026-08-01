@@ -67,20 +67,23 @@
     Aqua.reveal();
 
     const s = AquaDB.session.get();
-    if (!s) { location.href = 'sign-in.html'; }
-    const c = AquaDB.customers.get(s.customerId);
-    if (!c) { AquaDB.session.clear(); location.href = 'sign-in.html'; }
+    if (!s) { location.replace('sign-in.html'); }
+    else {
+      const c = AquaDB.customers.get(s.customerId);
+      if (!c) { AquaDB.session.clear(); location.replace('sign-in.html'); }
+      else {
+        document.getElementById('p-name').textContent = c.name;
+        document.getElementById('p-email').textContent = c.email || '—';
+        document.getElementById('p-phone').textContent = c.phone || '—';
+        document.getElementById('p-since').textContent = new Date(c.createdAt).toLocaleDateString('ar-EG');
 
-    document.getElementById('p-name').textContent = c.name;
-    document.getElementById('p-email').textContent = c.email || '—';
-    document.getElementById('p-phone').textContent = c.phone || '—';
-    document.getElementById('p-since').textContent = new Date(c.createdAt).toLocaleDateString('ar-EG');
-
-    document.getElementById('signOut').addEventListener('click', () => {
-      AquaDB.session.clear();
-      Aqua.toast('خرجت من حسابك', 'success');
-      setTimeout(() => location.href = 'sign-in.html', 600);
-    });
+        document.getElementById('signOut').addEventListener('click', () => {
+          AquaDB.session.clear();
+          Aqua.toast('خرجت من حسابك', 'success');
+          setTimeout(() => location.href = 'sign-in.html', 600);
+        });
+      }
+    }
   </script>
 </body>
 </html>

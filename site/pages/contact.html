@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -7,7 +7,8 @@
   <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body class="loading">
@@ -52,9 +53,23 @@
               <div><strong>مواعيد الشغل</strong>يومي · ٦ الصبح — ٩ بليل</div>
             </li>
           </ul>
-          <div style="margin-top: 32px; border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-md);">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.7!2d31.21!3d30.04!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzI0LjAiTiAzMcKwMTInMzYuMCJF!5e0!3m2!1sar!2seg!4v1700000000000" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <div style="margin-top: 32px; border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-md); position: relative; background: var(--bg-warm);">
+            <iframe id="mapFrame" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.7!2d31.21!3d30.04!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzI0LjAiTiAzMcKwMTInMzYuMCJF!5e0!3m2!1sar!2seg!4v1700000000000" width="100%" height="300" style="border:0; display: block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="خريطة أكوا لودو"></iframe>
           </div>
+          <script>
+            (function () {
+              var f = document.getElementById('mapFrame');
+              if (!f) return;
+              var loadMap = function () { f.src = f.getAttribute('data-src'); };
+              if (window.addEventListener) {
+                window.addEventListener('load', loadMap, { once: true });
+                if ('IntersectionObserver' in window) {
+                  var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { loadMap(); io.disconnect(); } }, { rootMargin: '400px' });
+                  io.observe(f);
+                }
+              }
+            })();
+          </script>
         </div>
         <form class="form-shell reveal" id="contactForm">
           <div class="qa-stack" style="margin-bottom: 24px;">

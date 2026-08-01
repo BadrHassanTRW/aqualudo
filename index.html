@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +8,8 @@
   <link rel="icon" href="site/assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="site/assets/css/main.css" />
 </head>
 <body class="loading">
@@ -18,8 +19,8 @@
   <main>
 
     <section class="hero" id="hero">
-      <video class="hero-video" src="site/assets/video/hero.mp4" poster="site/assets/img/site/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
-      <div class="hero-bg-boat"><img src="site/assets/img/boat.png" alt="" /></div>
+      <video class="hero-video" src="site/assets/video/hero.mp4" poster="site/assets/img/site/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" fetchpriority="low" aria-hidden="true"></video>
+      <div class="hero-bg-boat"><img src="site/assets/img/boat.png" alt="" loading="lazy" /></div>
       <div class="container">
         <div class="hero-grid">
           <div class="hero-content reveal">
@@ -60,7 +61,7 @@
             </div>
           </div>
           <div class="hero-visual reveal">
-            <img id="hero-art" src="" alt="شخص بيعمل SUP على نهر وقت الغروب" />
+            <img id="hero-art" src="" alt="شخص بيعمل SUP على نهر وقت الغروب" fetchpriority="high" />
             <div class="badge-card">
               <span class="dot"></span>
               <div>
@@ -197,7 +198,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"التجديف هنا بقى مكان بيعالجني. الكوتشات داعمين، والنيل حاجة تانية وقت الشروق."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" alt="سلمى" />
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" alt="سلمى" loading="lazy" />
               <div><strong>سلمى عقل</strong><small>تجديف · سنتين</small></div>
             </div>
           </div>
@@ -205,7 +206,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"أنصح جداً بسيشنز الكياك. آمنة جداً، الفريق لطيف، وبيشرحولك كل حاجة. حبيتها."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" alt="فريدة" />
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" alt="فريدة" loading="lazy" />
               <div><strong>فريدة محمد</strong><small>كياك · ٦ شهور</small></div>
             </div>
           </div>
@@ -213,7 +214,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"جيت لتريال واحد وفضلت سنتين. أحسن قرار أخدته في القاهرة. كوميونتي حقيقية، كوتشنج حقيقي."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format" alt="أندرو" />
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format" alt="أندرو" loading="lazy" />
               <div><strong>أندرو عزت</strong><small>تجديف و SUP</small></div>
             </div>
           </div>
@@ -299,7 +300,7 @@
       actsEl.innerHTML = acts.map((a, i) => `
         <a class="activity-card ${i === 0 ? 'large' : 'small'} reveal" href="site/pages/activity.html?slug=${a.slug}">
           ${i === 0 ? '<span class="tag">الأكثر طلباً</span>' : ''}
-          <img src="${a.hero}" alt="${a.name}" />
+          <img src="${a.hero}" alt="${a.name}" loading="lazy" ${i === 0 ? 'fetchpriority="high"' : ''} />
           <div class="overlay"></div>
           <div class="meta">
             <div class="num">${a.number} — ${a.name}</div>

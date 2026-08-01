@@ -275,10 +275,10 @@ section { position: relative; }
   background-size: cover; background-position: center;
 }
 .avatars span:first-child { margin-left: 0; }
-.avatars span:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&auto=format'); }
-.avatars span:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format'); }
-.avatars span:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format'); }
-.avatars span:nth-child(4) { background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format'); }
+.avatars span:nth-child(1) { background: var(--coral); }
+.avatars span:nth-child(2) { background: var(--nile); }
+.avatars span:nth-child(3) { background: var(--gold); }
+.avatars span:nth-child(4) { background: var(--ink); }
 .hero-trust p { font-size: 0.95rem; color: var(--ink-soft); font-weight: 600; }
 .hero-trust strong { color: var(--ink); }
 

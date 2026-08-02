@@ -1453,9 +1453,14 @@ body.is-admin .wa-float { display: none; }
 @media (max-width: 980px) {
   .bottom-nav { display: flex; }
   body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
-  /* Bottom nav already has a quick-book (+) button — drop the floating hub and
-     the dev-only admin link so mobile shows one plus icon, not two. */
-  .fab-hub, .admin-float { display: none; }
+  /* Bottom nav already has a quick-book (+) button — drop the floating hub so
+     mobile shows one plus icon, not two. The dev-only admin lock stays: it's the
+     only one-click path to the admin panel on small screens. */
+  .fab-hub { display: none; }
+  .admin-float {
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    right: 20px;
+  }
   .wa-float { bottom: calc(92px + env(safe-area-inset-bottom)); }
   body.is-admin .bottom-nav { display: none; }
   body.is-admin { padding-bottom: 0; }

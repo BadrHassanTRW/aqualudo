@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Not Found · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
+</head>
+<body>
+  <div id="header-root"></div>
+  <div id="footer-root"></div>
+
+  <main>
+    <section class="section-pad" style="min-height: 70vh; display: flex; align-items: center;">
+      <div class="container text-center">
+        <div style="font-family: 'Cairo', sans-serif; font-weight: 900; font-size: clamp(8rem, 25vw, 18rem); line-height: 1; color: var(--coral); letter-spacing: -0.05em;">404</div>
+        <h1 class="display" style="font-size: clamp(1.8rem, 4vw, 3rem); margin: 20px 0;">This page doesn't exist</h1>
+        <p class="lede" style="max-width: 480px; margin: 0 auto 32px;">The link might be wrong, or the page has moved. Either way, all we want is to get you back on the water.</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="../../en/index.html" class="btn btn-primary btn-lg">Home</a>
+          <a href="activities.html" class="btn btn-ghost btn-lg">See activities</a>
+        </div>
+        <div class="qa-stack" style="margin-top: 24px; justify-content: center;">
+          <a href="booking.html" class="qa-chip">Book a session</a>
+          <a href="activities.html" class="qa-chip">See activities</a>
+          <a href="pricing.html" class="qa-chip">Pricing</a>
+          <a href="events.html" class="qa-chip">Events</a>
+          <a href="contact.html" class="qa-chip">Contact</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    document.getElementById('header-root').innerHTML = Aqua.renderHeader();
+    document.getElementById('footer-root').innerHTML = Aqua.renderFooter();
+    Aqua.bindHeader();
+  </script>
+</body>
+</html>

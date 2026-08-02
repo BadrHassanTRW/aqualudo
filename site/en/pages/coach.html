@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة الكوتش · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Coach Panel · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
@@ -25,8 +25,9 @@
   </main>
   <div id="footer-root"></div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
     document.getElementById('header-root').innerHTML = Aqua.renderHeader();
@@ -43,9 +44,9 @@
     if (!coach) {
       content.innerHTML = `
         <div class="timeline-tile text-center">
-          <h2 class="display" style="margin-bottom: 12px;">اللينك مش صحيح</h2>
-          <p class="muted">اتأكد من اللينك أو كلمنا على واتساب.</p>
-          <a href="../../index.html" class="btn btn-primary" style="margin-top: 16px;">الرئيسية</a>
+          <h2 class="display" style="margin-bottom: 12px;">Invalid link</h2>
+          <p class="muted">Double-check the link or message us on WhatsApp.</p>
+          <a href="../../en/index.html" class="btn btn-primary" style="margin-top: 16px;">Home</a>
         </div>
       `;
     } else {
@@ -65,17 +66,17 @@
       content.innerHTML = `
         <div class="reveal" style="text-align: center; margin-bottom: 40px;">
           <div style="width: 96px; height: 96px; border-radius: 50%; background-size: cover; background-position: center; margin: 0 auto 16px; background-image: url('${coach.photo}'); border: 4px solid var(--coral);"></div>
-          <span class="eyebrow">كوتش</span>
+          <span class="eyebrow">Coach</span>
           <h1 class="display" style="font-size: clamp(2rem, 4vw, 3rem); margin-top: 12px; color: var(--ink);">${coach.name}</h1>
           <p class="lede">${coach.role}</p>
         </div>
 
         <div class="reveal">
-          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">سيشنز النهارده</h2>
+          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">Today's sessions</h2>
           ${todaySessions.length === 0 ? `
             <div class="timeline-tile text-center">
-              <h3 class="display" style="margin-bottom: 8px;">مفيش سيشنز النهارده</h3>
-              <p class="muted">استمتع بيومك على المية.</p>
+              <h3 class="display" style="margin-bottom: 8px;">No sessions today</h3>
+              <p class="muted">Enjoy your day on the water.</p>
             </div>
           ` : todaySessions.map(s => {
             const a = AquaDB.activities.getById(s.activityId);
@@ -85,14 +86,14 @@
               <div class="dashboard-card">
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap;">
                   <div style="flex: 1;">
-                    <div class="last-updated" style="margin-bottom: 6px;">${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })} · ${a ? a.name : ''}</div>
-                    <h2 class="display" style="font-size: 1.4rem; color: var(--ink); margin-bottom: 8px;">${a ? a.name : 'نشاط'} · ${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })}</h2>
-                    <p class="muted">${s.durationMin} دقيقة · ${s.booked}/${s.capacity} محجوز</p>
+                    <div class="last-updated" style="margin-bottom: 6px;">${d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' })} · ${a ? a.name : ''}</div>
+                    <h2 class="display" style="font-size: 1.4rem; color: var(--ink); margin-bottom: 8px;">${a ? a.name : 'Activity'} · ${d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' })}</h2>
+                    <p class="muted">${s.durationMin} min · ${s.booked}/${s.capacity} booked</p>
                   </div>
                 </div>
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line-soft);">
-                  <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 12px; color: var(--ink);">الحاضرين</h3>
-                  ${attendees.length === 0 ? '<p class="muted">محدش لسه.</p>' : '<div style="display: flex; flex-wrap: wrap; gap: 8px;">' + attendees.map(a => `<span class="badge badge-confirmed">${a.name}</span>`).join('') + '</div>'}
+                  <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 12px; color: var(--ink);">Attendees</h3>
+                  ${attendees.length === 0 ? '<p class="muted">No one yet.</p>' : '<div style="display: flex; flex-wrap: wrap; gap: 8px;">' + attendees.map(a => `<span class="badge badge-confirmed">${a.name}</span>`).join('') + '</div>'}
                 </div>
               </div>
             `;
@@ -100,16 +101,16 @@
         </div>
 
         <div class="reveal" style="margin-top: 40px;">
-          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">قادمة</h2>
-          ${upcoming.length === 0 ? '<p class="muted">مفيش سيشنز قادمة.</p>' : upcoming.map(s => {
+          <h2 class="display" style="font-size: 1.5rem; margin-bottom: 16px; color: var(--ink);">Upcoming</h2>
+          ${upcoming.length === 0 ? '<p class="muted">No upcoming sessions.</p>' : upcoming.map(s => {
             const a = AquaDB.activities.getById(s.activityId);
             const d = new Date(s.startsAt);
             return `
               <div class="timeline-item">
-                <div class="time">${d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}<br><small style="font-weight:600; font-size:0.8rem;">${d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })}</small></div>
+                <div class="time">${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}<br><small style="font-weight:600; font-size:0.8rem;">${d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' })}</small></div>
                 <div class="info">
-                  <h4>${a ? a.name : 'نشاط'}</h4>
-                  <p>${d.toLocaleDateString('ar-EG', { weekday: 'long' })} · ${s.booked}/${s.capacity} محجوز</p>
+                  <h4>${a ? a.name : 'Activity'}</h4>
+                  <p>${d.toLocaleDateString('en-GB', { weekday: 'long' })} · ${s.booked}/${s.capacity} booked</p>
                 </div>
               </div>
             `;
@@ -118,20 +119,20 @@
 
         <div class="reveal" style="margin-top: 40px;">
           <div class="coach-share">
-            <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">شارك اللينكات دي</h3>
+            <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">Share these links</h3>
             <div class="coach-share-row">
-              <div class="label">لينك صفحتك</div>
+              <div class="label">Your page link</div>
               <code id="shareLink">${shareUrl}</code>
-              <button class="btn btn-sm btn-ghost" id="copyLink">نسخ</button>
+              <button class="btn btn-sm btn-ghost" id="copyLink">Copy</button>
             </div>
             <div class="coach-share-row">
-              <div class="label">لينك التقويم (ICS)</div>
+              <div class="label">Calendar link (ICS)</div>
               <code id="icsLink">${shareUrl}&format=ics</code>
-              <a href="${shareUrl}&format=ics" class="btn btn-sm btn-ghost">تحميل</a>
+              <a href="${shareUrl}&format=ics" class="btn btn-sm btn-ghost">Download</a>
             </div>
-            <p class="muted" style="font-size: 0.85rem; margin-top: 12px;">اللينكات دي شخصية — متشاركهاش على السوشيال ميديا.</p>
+            <p class="muted" style="font-size: 0.85rem; margin-top: 12px;">These links are personal — don't share them on social media.</p>
             <div style="margin-top: 16px;">
-              <a href="booking.html" class="qa-chip">+ احجز سيشن عن هذا الكوتش</a>
+              <a href="booking.html" class="qa-chip">+ Book a session with this coach</a>
             </div>
           </div>
         </div>
@@ -139,7 +140,7 @@
 
       document.getElementById('copyLink').addEventListener('click', () => {
         navigator.clipboard.writeText(shareUrl);
-        Aqua.toast('اتنسخ اللينك', 'success');
+        Aqua.toast('Link copied', 'success');
       });
     }
   </script>

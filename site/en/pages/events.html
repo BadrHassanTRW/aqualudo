@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الإيفنتات · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Events · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
@@ -18,31 +18,31 @@
 
   <section class="hero-sm">
     <div class="container">
-      <div class="crumbs"><a href="../../index.html">الرئيسية</a> · الإيفنتات</div>
-      <span class="eyebrow">إيفنتات على النيل</span>
-      <h1>كل حاجة<br />في الكاليندر.</h1>
-      <p>من التحديات الرياضية للإفطارات الجماعية لغروب SUP — ده المكان اللي بنلاقي فيه بعض على المية.</p>
+      <div class="crumbs"><a href="../../en/index.html">Home</a> · Events</div>
+      <span class="eyebrow">Events on the Nile</span>
+      <h1>Everything<br />on the calendar.</h1>
+      <p>From sport challenges to group iftars to sunset SUP — this is where we all meet up on the water.</p>
     </div>
   </section>
 
   <section class="section-pad">
     <div class="container">
       <div class="row reveal" style="margin-bottom: 28px; gap: 10px;">
-        <button type="button" data-qb="1" class="qa-chip">+ احجز سيشن</button>
+        <button type="button" data-qb="1" class="qa-chip">+ Book a session</button>
       </div>
 
       <div class="section-head reveal">
         <div class="left">
-          <span class="eyebrow">إيفنتات جاية</span>
-          <h2 class="display section-title">القادم.</h2>
+          <span class="eyebrow">Upcoming events</span>
+          <h2 class="display section-title">Up next.</h2>
         </div>
       </div>
       <div id="upcoming"></div>
 
       <div class="section-head reveal" style="margin-top: 80px;">
         <div class="left">
-          <span class="eyebrow">إيفنتات فاتت</span>
-          <h2 class="display section-title">اللي فات.</h2>
+          <span class="eyebrow">Past events</span>
+          <h2 class="display section-title">Done that.</h2>
         </div>
       </div>
       <div id="past"></div>
@@ -51,8 +51,9 @@
 
   <div id="footer-root"></div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
     document.getElementById('header-root').innerHTML = Aqua.renderHeader('events');
@@ -70,7 +71,7 @@
     function render(list, target) {
       const el = document.getElementById(target);
       if (list.length === 0) {
-        el.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">مفيش إيفنتات هنا لسه</h3><p class="muted">تابعنا على إنستجرام عشان أول ما ننزل إيفنت جديد.</p></div>';
+        el.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">No events here yet</h3><p class="muted">Follow us on Instagram so you\'re the first to know when a new event drops.</p></div>';
         return;
       }
       el.innerHTML = list.map(e => {
@@ -85,10 +86,10 @@
                 <span>📍 ${e.location}</span>
                 <span>🕒 ${e.time}</span>
                 <span>👥 ${e.audience}</span>
-                ${e.price > 0 ? `<span>🎟️ ${e.price} جنيه</span>` : '<span>🎟️ مجاني</span>'}
+                ${e.price > 0 ? `<span>🎟️ ${e.price} EGP</span>` : '<span>🎟️ Free</span>'}
               </div>
             </div>
-            <span class="btn ${e.price > 0 ? 'btn-primary' : 'btn-ghost'}" style="padding: 14px 22px; font-size: 0.9rem; ${e.price > 0 ? '' : 'color:#fff; border-color: rgba(255,255,255,0.3);'}">${e.price > 0 ? 'احجز مكان' : 'اعرف أكتر'}</span>
+            <span class="btn ${e.price > 0 ? 'btn-primary' : 'btn-ghost'}" style="padding: 14px 22px; font-size: 0.9rem; ${e.price > 0 ? '' : 'color:#fff; border-color: rgba(255,255,255,0.3);'}">${e.price > 0 ? 'Book a spot' : 'Learn more'}</span>
           </a>
         `;
       }).join('');

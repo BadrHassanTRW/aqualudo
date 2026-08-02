@@ -1,63 +1,63 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الحجوزات · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Bookings · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
   <div id="adm-page-wrap">
     <div class="admin-page-head">
       <div>
-        <span class="eyebrow">كل الحجوزات</span>
-        <h1>الحجوزات</h1>
-        <p>أكّد، ألغِ، أو ضيف حجز جديد (واتساب أو تليفون).</p>
+        <span class="eyebrow">All bookings</span>
+        <h1>Bookings</h1>
+        <p>Confirm, cancel, or add a new booking (WhatsApp or phone).</p>
       </div>
       <div class="actions">
-        <button id="toggleAdd" class="btn btn-primary">+ ضيف حجز</button>
+        <button id="toggleAdd" class="btn btn-primary">+ Add booking</button>
       </div>
     </div>
 
     <div class="tab-bar">
-      <button class="tab active" data-filter="all">الكل</button>
-      <button class="tab" data-filter="pending">معلقة</button>
-      <button class="tab" data-filter="confirmed">مؤكدة</button>
-      <button class="tab" data-filter="cancelled">ملغية</button>
-      <button class="tab" data-filter="today">النهاردة</button>
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="pending">Pending</button>
+      <button class="tab" data-filter="confirmed">Confirmed</button>
+      <button class="tab" data-filter="cancelled">Cancelled</button>
+      <button class="tab" data-filter="today">Today</button>
     </div>
 
     <div id="addForm" style="display: none; margin-bottom: 24px;">
       <div class="admin-card">
-        <h2>حجز جديد</h2>
+        <h2>New booking</h2>
         <form id="newBooking" class="admin-form">
           <div class="form-row three">
-            <div class="field"><label>اسم العميل</label><input type="text" id="nb-name" required /></div>
-            <div class="field"><label>الموبايل</label><input type="tel" id="nb-phone" required placeholder="+20..." /></div>
-            <div class="field"><label>النشاط</label>
-              <select id="nb-activity" required><option value="">اختار</option></select>
+            <div class="field"><label>Customer name</label><input type="text" id="nb-name" required /></div>
+            <div class="field"><label>Mobile</label><input type="tel" id="nb-phone" required placeholder="+20..." /></div>
+            <div class="field"><label>Activity</label>
+              <select id="nb-activity" required><option value="">Choose</option></select>
             </div>
           </div>
           <div class="form-row three">
-            <div class="field"><label>الموعد</label><input type="datetime-local" id="nb-when" required /></div>
-            <div class="field"><label>عدد الناس</label>
+            <div class="field"><label>When</label><input type="datetime-local" id="nb-when" required /></div>
+            <div class="field"><label>People</label>
               <select id="nb-size"><option>1</option><option>2</option><option>3</option><option>4</option></select>
             </div>
-            <div class="field"><label>الدفع</label>
-              <select id="nb-payment"><option value="unpaid">مش مدفوع</option><option value="deposit_paid">عربون</option><option value="paid">مدفوع</option></select>
+            <div class="field"><label>Payment</label>
+              <select id="nb-payment"><option value="unpaid">Unpaid</option><option value="deposit_paid">Deposit</option><option value="paid">Paid</option></select>
             </div>
           </div>
-          <div class="field"><label>ملاحظات</label><textarea id="nb-notes"></textarea></div>
+          <div class="field"><label>Notes</label><textarea id="nb-notes"></textarea></div>
           <div class="form-actions">
-            <button type="button" id="cancelAdd" class="btn btn-ghost">إلغاء</button>
-            <button type="submit" class="btn btn-primary">احفظ الحجز</button>
+            <button type="button" id="cancelAdd" class="btn btn-ghost">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save booking</button>
           </div>
         </form>
       </div>
@@ -67,12 +67,12 @@
       <table class="admin-table" id="bookingsTable">
         <thead>
           <tr>
-            <th>العميل</th>
-            <th>النشاط</th>
-            <th>الموعد</th>
-            <th>عدد</th>
-            <th>الدفع</th>
-            <th>الحالة</th>
+            <th>Customer</th>
+            <th>Activity</th>
+            <th>When</th>
+            <th>People</th>
+            <th>Payment</th>
+            <th>Status</th>
             <th></th>
           </tr>
         </thead>
@@ -81,8 +81,9 @@
     </div>
   </div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     if (typeof AquaDB !== 'undefined' && AquaDB.admin && !AquaDB.admin.isAuth()) {
       location.href = 'login.html';
@@ -101,10 +102,10 @@
     const quick = document.getElementById('admQuick');
     if (quick) {
       quick.innerHTML = `
-        <a class="btn btn-ghost" href="bookings.html">الحجوزات</a>
-        <a class="btn btn-ghost" href="activities.html">الأنشطة</a>
-        <a class="btn btn-ghost" href="contacts.html">الرسايل</a>
-        <button class="btn btn-primary" type="button" data-qb="1">+ حجز جديد</button>
+        <a class="btn btn-ghost" href="bookings.html">Bookings</a>
+        <a class="btn btn-ghost" href="activities.html">Activities</a>
+        <a class="btn btn-ghost" href="contacts.html">Messages</a>
+        <button class="btn btn-primary" type="button" data-qb="1">+ New booking</button>
       `;
     }
     Aqua.bindGlobal();
@@ -139,13 +140,13 @@
         notes: document.getElementById('nb-notes').value.trim(),
         status: 'confirmed',
       };
-      if (!data.name || !data.phone || !data.activityId || !data.startAt) { Aqua.toast('املا كل الخانات', 'error'); return; }
+      if (!data.name || !data.phone || !data.activityId || !data.startAt) { Aqua.toast('Fill in all fields', 'error'); return; }
       const customer = AquaDB.customers.findOrCreate({ name: data.name, phone: data.phone });
       data.customerId = customer.id;
       AquaDB.bookings.create(data);
       document.getElementById('newBooking').reset();
       document.getElementById('addForm').style.display = 'none';
-      Aqua.toast('اتضاف الحجز', 'success');
+      Aqua.toast('Booking added', 'success');
       render();
     });
 
@@ -161,18 +162,18 @@
 
       const tbody = document.getElementById('tbody');
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="empty"><h3>مفيش حجوزات هنا</h3><p class="muted">لما حد يحجز، هيظهر هنا.</p></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="empty"><h3>No bookings here</h3><p class="muted">When someone books, it will show up here.</p></td></tr>`;
         return;
       }
       tbody.innerHTML = list.map(b => {
         const a = AquaDB.activities.getById(b.activityId);
         const d = new Date(b.startAt);
-        const date = d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
-        const time = d.toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' });
-        const status = b.status === 'confirmed' ? '<span class="badge badge-confirmed">مؤكدة</span>' : b.status === 'cancelled' ? '<span class="badge badge-cancelled">ملغية</span>' : '<span class="badge badge-pending">معلقة</span>';
-        const pay = b.payment === 'paid' ? '<span class="badge badge-paid">مدفوع</span>' : b.payment === 'deposit_paid' ? '<span class="badge badge-deposit">عربون</span>' : b.payment === 'refunded' ? '<span class="badge badge-refunded">مرتجع</span>' : '<span class="badge badge-unpaid">غير مدفوع</span>';
+        const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        const time = d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' });
+        const status = b.status === 'confirmed' ? '<span class="badge badge-confirmed">Confirmed</span>' : b.status === 'cancelled' ? '<span class="badge badge-cancelled">Cancelled</span>' : '<span class="badge badge-pending">Pending</span>';
+        const pay = b.payment === 'paid' ? '<span class="badge badge-paid">Paid</span>' : b.payment === 'deposit_paid' ? '<span class="badge badge-deposit">Deposit</span>' : b.payment === 'refunded' ? '<span class="badge badge-refunded">Refunded</span>' : '<span class="badge badge-unpaid">Unpaid</span>';
         const phone = (b.phone || '').replace(/[^0-9+]/g, '');
-        const waMsg = encodeURIComponent(`أهلاً ${b.name}، حجزك في ${a ? a.name : 'أكوا لودو'} يوم ${d.toLocaleDateString('ar-EG')} الساعة ${time} ${b.status === 'confirmed' ? 'مؤكد ✅' : 'قيد التأكيد'}.`);
+        const waMsg = encodeURIComponent(`Hi ${b.name}, your booking at ${a ? a.name : 'Aqua Ludo'} on ${d.toLocaleDateString('en-GB')} at ${time} ${b.status === 'confirmed' ? 'confirmed ✅' : 'pending confirmation'}.`);
         const rowClass = b.status === 'cancelled' ? 'cancelled' : '';
         return `
           <tr class="${rowClass}">
@@ -187,9 +188,9 @@
             <td>${status}</td>
             <td>
               <div class="row-actions">
-                <a href="https://wa.me/${phone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-sm btn-success" title="واتساب">💬</a>
-                ${b.status === 'pending' ? `<button class="btn btn-sm btn-success" data-confirm="${b.id}">تأكيد</button>` : ''}
-                ${b.status !== 'cancelled' ? `<button class="btn btn-sm btn-danger" data-cancel="${b.id}">إلغاء</button>` : ''}
+                <a href="https://wa.me/${phone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-sm btn-success" title="WhatsApp">💬</a>
+                ${b.status === 'pending' ? `<button class="btn btn-sm btn-success" data-confirm="${b.id}">Confirm</button>` : ''}
+                ${b.status !== 'cancelled' ? `<button class="btn btn-sm btn-danger" data-cancel="${b.id}">Cancel</button>` : ''}
               </div>
             </td>
           </tr>
@@ -199,15 +200,15 @@
       tbody.querySelectorAll('[data-confirm]').forEach(btn => {
         btn.addEventListener('click', () => {
           AquaDB.bookings.confirm(btn.dataset.confirm);
-          Aqua.toast('اتأكدت', 'success');
+          Aqua.toast('Confirmed', 'success');
           render();
         });
       });
       tbody.querySelectorAll('[data-cancel]').forEach(btn => {
         btn.addEventListener('click', () => {
-          if (!confirm('متأكد عايز تلغي الحجز ده؟')) return;
+          if (!confirm('Are you sure you want to cancel this booking?')) return;
           AquaDB.bookings.cancel(btn.dataset.cancel);
-          Aqua.toast('اتلغى', 'success');
+          Aqua.toast('Cancelled', 'success');
           render();
         });
       });

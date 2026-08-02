@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الأنشطة · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Activities · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
@@ -18,10 +18,10 @@
 
   <section class="hero-sm">
     <div class="container">
-      <div class="crumbs"><a href="../../index.html">الرئيسية</a> · الأنشطة</div>
-      <span class="eyebrow">كل الرياضات المائية</span>
-      <h1>خمس رياضات.<br />مية واحدة وفريق واحد.</h1>
-      <p>اختار رياضتك واحجز أول سيشن. مش محتاج خبرة، كل العدة علينا، وكل سيشن مع كوتش متخصص على المية.</p>
+      <div class="crumbs"><a href="../../en/index.html">Home</a> · Activities</div>
+      <span class="eyebrow">All the water sports</span>
+      <h1>Five sports.<br />One water, one team.</h1>
+      <p>Pick your sport and book your first session. No experience needed — all the gear is on us, and every session runs with a dedicated coach on the water.</p>
     </div>
   </section>
 
@@ -29,21 +29,21 @@
     <div class="container">
       <div class="section-head reveal" style="margin-bottom: 28px;">
         <div class="left">
-          <span class="eyebrow">فلترة سريعة</span>
-          <h2 class="display" style="font-size: clamp(1.6rem, 3vw, 2.4rem);">اختار رياضتك.</h2>
+          <span class="eyebrow">Quick filter</span>
+          <h2 class="display" style="font-size: clamp(1.6rem, 3vw, 2.4rem);">Choose your sport.</h2>
         </div>
         <div class="row" style="gap: 10px;">
-          <button type="button" data-qb="1" class="btn btn-primary">+ احجز سيشن</button>
+          <button type="button" data-qb="1" class="btn btn-primary">+ Book a session</button>
         </div>
       </div>
 
       <div class="filter-pills reveal" id="filterPills">
-        <button type="button" class="filter-pill active" data-slug-filter="all">الكل</button>
-        <button type="button" class="filter-pill" data-slug-filter="rowing">تجديف</button>
-        <button type="button" class="filter-pill" data-slug-filter="kayaking">كياك</button>
+        <button type="button" class="filter-pill active" data-slug-filter="all">All</button>
+        <button type="button" class="filter-pill" data-slug-filter="rowing">Rowing</button>
+        <button type="button" class="filter-pill" data-slug-filter="kayaking">Kayaking</button>
         <button type="button" class="filter-pill" data-slug-filter="sup">SUP</button>
-        <button type="button" class="filter-pill" data-slug-filter="wake">ويك بورد</button>
-        <button type="button" class="filter-pill" data-slug-filter="fit">فتنس</button>
+        <button type="button" class="filter-pill" data-slug-filter="wake">Wakeboard</button>
+        <button type="button" class="filter-pill" data-slug-filter="fit">Fitness</button>
       </div>
 
       <div class="activities-grid" id="grid"></div>
@@ -52,8 +52,9 @@
 
   <div id="footer-root"></div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
     document.getElementById('header-root').innerHTML = Aqua.renderHeader('activities');
@@ -70,7 +71,7 @@
         <div class="meta">
           <div class="num">${a.number} — ${a.name}</div>
           <h3 class="card-title display">${a.tagline}</h3>
-          <div class="price">ابتداءً من ${a.pricing[0].price} جنيه / ${a.pricing[0].duration}</div>
+          <div class="price">From ${a.pricing[0].price} EGP / ${a.pricing[0].duration}</div>
         </div>
       </a>
     `).join('');

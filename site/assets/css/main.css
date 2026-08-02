@@ -1703,3 +1703,32 @@ body.is-admin .wa-float { display: none; }
 }
 
 
+
+/* ---- Language switcher ---- */
+.nav-lang-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 13px; border-radius: var(--r-full);
+  background: transparent; border: 1.5px solid var(--line);
+  color: var(--ink); font-weight: 800; font-size: 0.82rem;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.nav-lang-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.nav-lang-btn svg { width: 16px; height: 16px; }
+@media (max-width: 720px) { .nav-lang-btn span { display: none; } .nav-lang-btn { padding: 9px 10px; } }
+
+.adm-lang {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: var(--r-full);
+  border: 1.5px solid var(--line); color: var(--ink);
+  font-weight: 800; font-size: 0.8rem; text-decoration: none; white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.adm-lang:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.adm-lang svg { width: 15px; height: 15px; }
+
+/* ---- LTR (English) polish ---- */
+html[lang="en"] body { font-family: 'Plus Jakarta Sans', 'Cairo', system-ui, sans-serif; }
+html[lang="en"] .display, html[lang="en"] h1, html[lang="en"] h2, html[lang="en"] h3, html[lang="en"] .eyebrow, html[lang="en"] .adm-title { font-family: 'Outfit', 'Cairo', sans-serif; }
+html[lang="en"] .btn-arrow::after { content: '→'; }
+html[lang="en"] .btn-arrow:hover::after { transform: translateX(4px); }

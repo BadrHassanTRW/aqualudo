@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Dashboard · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
   <div id="adm-page-wrap">
     <div class="admin-page-head">
       <div>
-        <span class="eyebrow">نظرة عامة</span>
-        <h1>النهاردة في الأكاديمية</h1>
-        <p>الأرقام الأهم بنظرة. <span class="last-updated" id="updated">آخر تحديث: دلوقتي</span></p>
+        <span class="eyebrow">Overview</span>
+        <h1>Today at the academy</h1>
+        <p>The numbers that matter at a glance. <span class="last-updated" id="updated">Last updated: just now</span></p>
       </div>
       <div class="actions">
-        <button id="refresh" class="btn btn-ghost btn-arrow">تحديث</button>
+        <button id="refresh" class="btn btn-ghost btn-arrow">Refresh</button>
       </div>
     </div>
 
@@ -30,22 +30,23 @@
 
     <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
       <div class="dashboard-card">
-        <h2>الحجوزات اللي محتاجة تأكيد</h2>
+        <h2>Bookings awaiting confirmation</h2>
         <div id="pending"></div>
       </div>
       <div class="dashboard-card">
-        <h2>إجمالي الأعضاء</h2>
+        <h2>Total members</h2>
         <div id="customers-stats"></div>
         <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line-soft);">
-          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">رسايل الاتصال</h3>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; color: var(--ink);">Contact messages</h3>
           <div id="contacts-stats"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     if (typeof AquaDB !== 'undefined' && AquaDB.admin && !AquaDB.admin.isAuth()) {
       location.href = 'login.html';
@@ -64,10 +65,10 @@
     const quick = document.getElementById('admQuick');
     if (quick) {
       quick.innerHTML = `
-        <a class="btn btn-ghost" href="bookings.html">الحجوزات</a>
-        <a class="btn btn-ghost" href="activities.html">الأنشطة</a>
-        <a class="btn btn-ghost" href="contacts.html">الرسايل</a>
-        <button class="btn btn-primary" type="button" data-qb="1">+ حجز جديد</button>
+        <a class="btn btn-ghost" href="bookings.html">Bookings</a>
+        <a class="btn btn-ghost" href="activities.html">Activities</a>
+        <a class="btn btn-ghost" href="contacts.html">Messages</a>
+        <button class="btn btn-primary" type="button" data-qb="1">+ New booking</button>
       `;
     }
     Aqua.bindGlobal();
@@ -93,19 +94,19 @@
         const all = AquaDB.bookings.all().filter(b => b.activityId === a.id);
         const conf = all.filter(b => b.status === 'confirmed').length;
         const rev = all.filter(b => b.status === 'confirmed').reduce((s, b) => s + priceFor(b) * (b.partySize || 1), 0);
-        return `<div class="kpi-row"><div class="kpi-label">${a.name}</div><div class="kpi-value">${conf} سيشن</div><div class="kpi-value" style="color: var(--coral); font-size: 0.95rem;">${rev.toLocaleString()} ج</div></div>`;
+        return `<div class="kpi-row"><div class="kpi-label">${a.name}</div><div class="kpi-value">${conf} sessions</div><div class="kpi-value" style="color: var(--coral); font-size: 0.95rem;">${rev.toLocaleString()} EGP</div></div>`;
       }).join('');
       document.getElementById('customers-stats').innerHTML = `
-        <div class="kpi-row"><div class="kpi-label">عدد الأعضاء</div><div class="kpi-value">${AquaDB.customers.all().length}</div></div>
-        <div class="kpi-row"><div class="kpi-label">أنشطة فعّالة</div><div class="kpi-value">${AquaDB.activities.active().length}</div></div>
-        <div class="kpi-row"><div class="kpi-label">كوتشات</div><div class="kpi-value">${AquaDB.coaches.all().length}</div></div>
-        <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin: 20px 0 12px; color: var(--ink);">إيراد الشهر حسب النشاط</h3>
+        <div class="kpi-row"><div class="kpi-label">Members</div><div class="kpi-value">${AquaDB.customers.all().length}</div></div>
+        <div class="kpi-row"><div class="kpi-label">Active activities</div><div class="kpi-value">${AquaDB.activities.active().length}</div></div>
+        <div class="kpi-row"><div class="kpi-label">Coaches</div><div class="kpi-value">${AquaDB.coaches.all().length}</div></div>
+        <h3 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.1rem; margin: 20px 0 12px; color: var(--ink);">Month revenue by activity</h3>
         ${actsHTML}
       `;
 
       const pending = allB.filter(b => b.status === 'pending').slice(0, 5);
       const pendingHTML = pending.length === 0
-        ? '<p class="muted">مفيش حجوزات معلقة. كل حاجة متأكدة. 👏</p>'
+        ? '<p class="muted">No pending bookings. All confirmed. 👏</p>'
         : pending.map(b => {
           const a = AquaDB.activities.getById(b.activityId);
           const d = new Date(b.startAt);
@@ -113,9 +114,9 @@
             <div class="kpi-row">
               <div class="kpi-label">
                 <strong style="color: var(--ink);">${b.name}</strong><br>
-                <small class="muted">${a ? a.name : ''} · ${d.toLocaleDateString('ar-EG')}</small>
+                <small class="muted">${a ? a.name : ''} · ${d.toLocaleDateString('en-GB')}</small>
               </div>
-              <div><a href="bookings.html" class="btn btn-sm btn-primary">شوف</a></div>
+              <div><a href="bookings.html" class="btn btn-sm btn-primary">View</a></div>
             </div>
           `;
         }).join('');
@@ -123,33 +124,33 @@
 
       const contacts = AquaDB.contact.all();
       document.getElementById('contacts-stats').innerHTML = `
-        <div class="kpi-row"><div class="kpi-label">رسايل جديدة</div><div class="kpi-value">${contacts.length}</div></div>
-        <a href="contacts.html" class="btn btn-sm btn-ghost" style="margin-top: 8px;">شوف الرسايل</a>
+        <div class="kpi-row"><div class="kpi-label">New messages</div><div class="kpi-value">${contacts.length}</div></div>
+        <a href="contacts.html" class="btn btn-sm btn-ghost" style="margin-top: 8px;">View messages</a>
       `;
 
       document.getElementById('metrics').innerHTML = `
         <div class="metric-card">
-          <div class="metric-label">حجوزات النهارده</div>
+          <div class="metric-label">Today's bookings</div>
           <div class="metric-value">${todayB.length}</div>
-          <div class="metric-trend">من ${allB.filter(b => b.status === 'pending' && new Date(b.startAt).toDateString() === today.toDateString()).length} معلق</div>
+          <div class="metric-trend">${allB.filter(b => b.status === 'pending' && new Date(b.startAt).toDateString() === today.toDateString()).length} pending</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">حجوزات الشهر ده</div>
+          <div class="metric-label">This month's bookings</div>
           <div class="metric-value">${monthB.length}</div>
-          <div class="metric-trend">+${(monthB.length * 0.1).toFixed(1)} عن الشهر اللي فات</div>
+          <div class="metric-trend">+${(monthB.length * 0.1).toFixed(1)} vs last month</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">إيراد الشهر ده</div>
+          <div class="metric-label">This month's revenue</div>
           <div class="metric-value">EGP ${monthRev.toLocaleString()}</div>
-          <div class="metric-trend">${todayRev.toLocaleString()} جنيه النهارده</div>
+          <div class="metric-trend">${todayRev.toLocaleString()} EGP today</div>
         </div>
       `;
 
       const now = new Date();
-      document.getElementById('updated').textContent = 'آخر تحديث: ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('updated').textContent = 'Last updated: ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     }
 
-    document.getElementById('refresh').addEventListener('click', () => { render(); Aqua.toast('اتحدثت', 'success'); });
+    document.getElementById('refresh').addEventListener('click', () => { render(); Aqua.toast('Updated', 'success'); });
     render();
   </script>
 </body>

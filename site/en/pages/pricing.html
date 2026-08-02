@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الأسعار · أكوا لودو</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Pricing · Aqua Ludo</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
@@ -18,10 +18,10 @@
 
   <section class="hero-sm">
     <div class="container">
-      <div class="crumbs"><a href="../../index.html">الرئيسية</a> · الأسعار</div>
-      <span class="eyebrow">ادفع زي ما يناسبك</span>
-      <h1>كل الباكدجز<br />والـ memberships.</h1>
-      <p>جديد هنا؟ ابدأ بسيشن واحد. عجبك؟ وفّر فلوسك بباكدج. بتحب أكتر؟ خد membership شهري وهنرسّبك على أي رياضة على المية.</p>
+      <div class="crumbs"><a href="../../en/index.html">Home</a> · Pricing</div>
+      <span class="eyebrow">Pay the way that suits you</span>
+      <h1>All the packages<br />and memberships.</h1>
+      <p>New here? Start with a single session. Love it? Save with a package. Want more? Grab a monthly membership and we'll train you up in any water sport.</p>
     </div>
   </section>
 
@@ -29,8 +29,8 @@
     <div class="container">
       <div class="section-head center reveal">
         <div class="left">
-          <span class="eyebrow">باكدجز السيشنز</span>
-          <h2 class="display section-title">ادفع كل سيشن.<br />أو اشتري رزمة ووفّر.</h2>
+          <span class="eyebrow">Session packages</span>
+          <h2 class="display section-title">Pay per session.<br />Or grab a bundle and save.</h2>
         </div>
       </div>
       <div class="pricing-grid" id="packages"></div>
@@ -41,9 +41,9 @@
     <div class="container">
       <div class="section-head center reveal">
         <div class="left">
-          <span class="eyebrow">الـ Memberships الشهرية</span>
-          <h2 class="display section-title">تمرّن كل يوم<br />بثبات.</h2>
-          <p class="lede" style="margin-top: 18px;">أحسن حاجة للناس اللي عايزة تتقدم فعلاً. خصومات على الإيفنتات، كوتش شخصي، ومراجعة شهرية لأهدافك.</p>
+          <span class="eyebrow">Monthly memberships</span>
+          <h2 class="display section-title">Train every day,<br />steadily.</h2>
+          <p class="lede" style="margin-top: 18px;">The best option for people who really want to progress. Event discounts, a personal coach, and a monthly goal review.</p>
         </div>
       </div>
       <div class="pricing-grid" id="memberships"></div>
@@ -53,17 +53,18 @@
   <section class="section-pad">
     <div class="container">
       <div class="dashboard-card text-center" style="background: var(--ink); color: #fff; border: none;">
-        <h2 class="display" style="color: #fff; margin-bottom: 14px;">مش متأكد تختار إيه؟</h2>
-        <p style="color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 24px;">كلمنا على واتساب وهنرشّحلك الباكدج اللي يناسبك حسب هدفك ووقتك.</p>
-        <a href="https://wa.me/201011329642?text=عايز%20استفسر%20عن%20الباكدجز" target="_blank" rel="noopener" class="btn btn-primary btn-lg">كلمنا واتساب</a>
+        <h2 class="display" style="color: #fff; margin-bottom: 14px;">Not sure what to pick?</h2>
+        <p style="color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 24px;">Message us on WhatsApp and we'll recommend the package that fits your goals and schedule.</p>
+        <a href="https://wa.me/201011329642?text=Hello%20Aqua%20Ludo%2C%20I%27d%20like%20to%20ask%20about%20the%20packages" target="_blank" rel="noopener" class="btn btn-primary btn-lg">WhatsApp Us</a>
       </div>
     </div>
   </section>
 
   <div id="footer-root"></div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     document.getElementById('splash-root').innerHTML = Aqua.renderSplash();
     document.getElementById('header-root').innerHTML = Aqua.renderHeader('pricing');
@@ -77,10 +78,10 @@
       <div class="price-card ${p.featured ? 'featured' : ''} reveal">
         ${p.badge ? `<span class="badge-pop">${p.badge}</span>` : ''}
         <div class="price-card-name">${p.name}</div>
-        <div class="price-card-price">${p.price.toLocaleString()}<small>جنيه · ${p.scope}</small></div>
+        <div class="price-card-price">${p.price.toLocaleString()}<small>EGP · ${p.scope}</small></div>
         <p class="price-card-desc">${p.desc}</p>
         <ul class="price-card-list">${p.benefits.map(b => '<li>' + b + '</li>').join('')}</ul>
-        <button type="button" data-qb="1" class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">${p.featured ? 'انضم للرفيق' : 'ابدأ دلوقتي'}</button>
+        <button type="button" data-qb="1" class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">${p.featured ? 'Join the Mate' : 'Start now'}</button>
       </div>
     `).join('');
 
@@ -88,10 +89,10 @@
       <div class="price-card ${m.featured ? 'featured' : ''} reveal">
         ${m.badge ? `<span class="badge-pop">${m.badge}</span>` : ''}
         <div class="price-card-name">${m.name}</div>
-        <div class="price-card-price">${m.price.toLocaleString()}<small>جنيه · ${m.scope}</small></div>
+        <div class="price-card-price">${m.price.toLocaleString()}<small>EGP · ${m.scope}</small></div>
         <p class="price-card-desc">${m.desc}</p>
         <ul class="price-card-list">${m.benefits.map(b => '<li>' + b + '</li>').join('')}</ul>
-        <button type="button" data-qb="1" class="btn ${m.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">اشترك دلوقتي</button>
+        <button type="button" data-qb="1" class="btn ${m.featured ? 'btn-primary' : 'btn-ghost'} btn-arrow">Subscribe now</button>
       </div>
     `).join('');
 

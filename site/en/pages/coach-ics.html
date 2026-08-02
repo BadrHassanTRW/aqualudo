@@ -1,12 +1,13 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <title>ICS Feed</title>
-  <script src="../assets/js/i18n.js"></script>
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body>
-<script src="../assets/js/db.js"></script>
+<script src="../../assets/js/db-en.js"></script>
+<script src="../../assets/js/db.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
 const token = params.get('token');
@@ -43,7 +44,7 @@ if (params.get('format') === 'ics' && token) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    document.body.innerHTML = '<p style="font-family: sans-serif; padding: 40px; text-align: center;">جارٍ التحميل... ارجع لصفحة الكوتش.</p>';
+    document.body.innerHTML = '<p style="font-family: sans-serif; padding: 40px; text-align: center;">Downloading... head back to the coach page.</p>';
     setTimeout(() => location.href = 'coach.html?token=' + token, 1500);
   }
 }

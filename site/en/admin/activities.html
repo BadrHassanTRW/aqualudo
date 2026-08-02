@@ -1,52 +1,52 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الأنشطة · لوحة التحكم</title>
-  <link rel="icon" href="../assets/img/brand/favicon.png" type="image/png" />
+  <title>Activities · Control panel</title>
+  <link rel="icon" href="../../assets/img/brand/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css" />
-  <script src="../assets/js/i18n.js"></script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script src="../../assets/js/i18n.js"></script>
 </head>
 <body class="loading">
   <div id="splash-root"></div>
   <div id="adm-page-wrap">
     <div class="admin-page-head">
       <div>
-        <span class="eyebrow">كل الأنشطة</span>
-        <h1>الأنشطة</h1>
-        <p>عدّل، ضيف، أو أرشفة الأنشطة اللي بتظهر على الموقع.</p>
+        <span class="eyebrow">All activities</span>
+        <h1>Activities</h1>
+        <p>Edit, add, or archive the activities shown on the site.</p>
       </div>
       <div class="actions">
-        <button id="toggleAdd" class="btn btn-primary">+ نشاط جديد</button>
+        <button id="toggleAdd" class="btn btn-primary">+ New activity</button>
       </div>
     </div>
 
     <div id="addForm" style="display: none; margin-bottom: 24px;">
       <div class="admin-card">
-        <h2>نشاط جديد</h2>
+        <h2>New activity</h2>
         <form id="newAct" class="admin-form">
           <div class="form-row">
-            <div class="field"><label>الاسم (عربي)</label><input type="text" id="na-name" required /></div>
-            <div class="field"><label>الـ slug (عربي في اللينك)</label><input type="text" id="na-slug" required placeholder="مثال: rowing" /></div>
+            <div class="field"><label>Name (Arabic)</label><input type="text" id="na-name" required /></div>
+            <div class="field"><label>Slug (Arabic in the link)</label><input type="text" id="na-slug" required placeholder="e.g. rowing" /></div>
           </div>
           <div class="form-row">
-            <div class="field"><label>الجملة التسويقية</label><input type="text" id="na-tagline" required placeholder="جملة قصيرة وجذابة" /></div>
-            <div class="field"><label>لينك الصورة</label><input type="url" id="na-hero" required placeholder="https://..." /></div>
+            <div class="field"><label>Tagline</label><input type="text" id="na-tagline" required placeholder="A short, catchy line" /></div>
+            <div class="field"><label>Image link</label><input type="url" id="na-hero" required placeholder="https://..." /></div>
           </div>
           <div class="form-row three">
-            <div class="field"><label>السعر (جنيه)</label><input type="number" id="na-price" required min="0" /></div>
-            <div class="field"><label>المدة</label><input type="text" id="na-duration" required value="ساعة" /></div>
-            <div class="field"><label>رقم العرض</label><input type="text" id="na-number" required placeholder="06" /></div>
+            <div class="field"><label>Price (EGP)</label><input type="number" id="na-price" required min="0" /></div>
+            <div class="field"><label>Duration</label><input type="text" id="na-duration" required value="hour" /></div>
+            <div class="field"><label>Display number</label><input type="text" id="na-number" required placeholder="06" /></div>
           </div>
-          <div class="field"><label>الوصف</label><textarea id="na-long" required></textarea></div>
+          <div class="field"><label>Description</label><textarea id="na-long" required></textarea></div>
           <div class="form-actions">
-            <button type="button" id="cancelAdd" class="btn btn-ghost">إلغاء</button>
-            <button type="submit" class="btn btn-primary">احفظ النشاط</button>
+            <button type="button" id="cancelAdd" class="btn btn-ghost">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save activity</button>
           </div>
         </form>
       </div>
@@ -57,8 +57,9 @@
     <div id="list"></div>
   </div>
 
-  <script src="../assets/js/db.js"></script>
-  <script src="../assets/js/app.js"></script>
+  <script src="../../assets/js/db-en.js"></script>
+  <script src="../../assets/js/db.js"></script>
+  <script src="../../assets/js/app.js"></script>
   <script>
     if (typeof AquaDB !== 'undefined' && AquaDB.admin && !AquaDB.admin.isAuth()) {
       location.href = 'login.html';
@@ -77,10 +78,10 @@
     const quick = document.getElementById('admQuick');
     if (quick) {
       quick.innerHTML = `
-        <a class="btn btn-ghost" href="bookings.html">الحجوزات</a>
-        <a class="btn btn-ghost" href="activities.html">الأنشطة</a>
-        <a class="btn btn-ghost" href="contacts.html">الرسايل</a>
-        <button class="btn btn-primary" type="button" data-qb="1">+ حجز جديد</button>
+        <a class="btn btn-ghost" href="bookings.html">Bookings</a>
+        <a class="btn btn-ghost" href="activities.html">Activities</a>
+        <a class="btn btn-ghost" href="contacts.html">Messages</a>
+        <button class="btn btn-primary" type="button" data-qb="1">+ New booking</button>
       `;
     }
     Aqua.bindGlobal();
@@ -100,15 +101,15 @@
         hero: document.getElementById('na-hero').value.trim(),
         long: document.getElementById('na-long').value.trim(),
         number: document.getElementById('na-number').value.trim(),
-        pricing: [{ name: 'عادي', desc: 'سيشن ساعة', price: parseInt(document.getElementById('na-price').value) || 0, duration: document.getElementById('na-duration').value.trim() }],
-        included: ['كل المعدات', 'كوتش معاك'],
-        bring: ['هدوم سباحة', 'كريم شمس'],
+        pricing: [{ name: 'Standard', desc: 'One-hour session', price: parseInt(document.getElementById('na-price').value) || 0, duration: document.getElementById('na-duration').value.trim() }],
+        included: ['All gear', 'Coach with you'],
+        bring: ['Swimwear', 'Sunscreen'],
       };
-      if (!data.name || !data.slug) { Aqua.toast('دخّل الاسم والـ slug', 'error'); return; }
+      if (!data.name || !data.slug) { Aqua.toast('Enter the name and slug', 'error'); return; }
       AquaDB.activities.create(data);
       document.getElementById('newAct').reset();
       document.getElementById('addForm').style.display = 'none';
-      Aqua.toast('اتضاف النشاط', 'success');
+      Aqua.toast('Activity added', 'success');
       render();
     });
 
@@ -116,7 +117,7 @@
       const all = AquaDB.activities.all();
       const list = document.getElementById('list');
       if (all.length === 0) {
-        list.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">مفيش أنشطة</h3></div>';
+        list.innerHTML = '<div class="timeline-tile text-center"><h3 class="display" style="margin-bottom:8px;">No activities</h3></div>';
         return;
       }
       list.innerHTML = all.map(a => {
@@ -127,21 +128,21 @@
             <div class="left">
               <div class="thumb" style="background-image: url('${a.hero}')"></div>
               <div class="info">
-                <h3>${a.name} <span style="color: var(--coral); font-weight: 800; font-size: 0.8rem;">${a.active ? 'فعّال' : 'مؤرشف'}</span></h3>
-                <p>${a.tagline} · ${sched.length} ميعاد أسبوعي · من ${minPrice} جنيه</p>
+                <h3>${a.name} <span style="color: var(--coral); font-weight: 800; font-size: 0.8rem;">${a.active ? 'Active' : 'Archived'}</span></h3>
+                <p>${a.tagline} · ${sched.length} weekly slots · from ${minPrice} EGP</p>
               </div>
             </div>
             <div class="right">
-              ${a.active ? `<button class="btn btn-sm btn-ghost" data-archive="${a.id}">أرشف</button>` : `<button class="btn btn-sm btn-success" data-restore="${a.id}">رجّعه</button>`}
-              <button class="btn btn-sm btn-ghost" data-edit="${a.id}">عدّل</button>
-              <a href="../pages/activity.html?slug=${a.slug}" target="_blank" class="btn btn-sm btn-light">شوف</a>
+              ${a.active ? `<button class="btn btn-sm btn-ghost" data-archive="${a.id}">Archive</button>` : `<button class="btn btn-sm btn-success" data-restore="${a.id}">Restore</button>`}
+              <button class="btn btn-sm btn-ghost" data-edit="${a.id}">Edit</button>
+              <a href="../pages/activity.html?slug=${a.slug}" target="_blank" class="btn btn-sm btn-light">View</a>
             </div>
           </div>
         `;
       }).join('');
 
-      list.querySelectorAll('[data-archive]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.archive(b.dataset.archive); Aqua.toast('اتأرشف', 'success'); render(); }));
-      list.querySelectorAll('[data-restore]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.update(b.dataset.restore, { active: true }); Aqua.toast('اترجّع', 'success'); render(); }));
+      list.querySelectorAll('[data-archive]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.archive(b.dataset.archive); Aqua.toast('Archived', 'success'); render(); }));
+      list.querySelectorAll('[data-restore]').forEach(b => b.addEventListener('click', () => { AquaDB.activities.update(b.dataset.restore, { active: true }); Aqua.toast('Restored', 'success'); render(); }));
       list.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEdit(b.dataset.edit)));
     }
 
@@ -153,23 +154,23 @@
       form.style.display = 'block';
       form.innerHTML = `
         <div class="admin-card">
-          <h2>تعديل: ${a.name}</h2>
+          <h2>Edit: ${a.name}</h2>
           <form id="editAct" class="admin-form">
             <div class="form-row">
-              <div class="field"><label>الاسم</label><input type="text" id="e-name" value="${a.name}" required /></div>
-              <div class="field"><label>الجملة التسويقية</label><input type="text" id="e-tagline" value="${a.tagline}" required /></div>
+              <div class="field"><label>Name</label><input type="text" id="e-name" value="${a.name}" required /></div>
+              <div class="field"><label>Tagline</label><input type="text" id="e-tagline" value="${a.tagline}" required /></div>
             </div>
             <div class="form-row">
-              <div class="field"><label>لينك الصورة</label><input type="url" id="e-hero" value="${a.hero}" required /></div>
-              <div class="field"><label>السعر الأساسي (جنيه)</label><input type="number" id="e-price" value="${a.pricing[0] ? a.pricing[0].price : 0}" required min="0" /></div>
+              <div class="field"><label>Image link</label><input type="url" id="e-hero" value="${a.hero}" required /></div>
+              <div class="field"><label>Base price (EGP)</label><input type="number" id="e-price" value="${a.pricing[0] ? a.pricing[0].price : 0}" required min="0" /></div>
             </div>
-            <div class="field"><label>الوصف</label><textarea id="e-long" required>${a.long}</textarea></div>
-            <h3>المواعيد الأسبوعية</h3>
+            <div class="field"><label>Description</label><textarea id="e-long" required>${a.long}</textarea></div>
+            <h3>Weekly schedule</h3>
             <div id="slots"></div>
-            <button type="button" id="addSlot" class="btn btn-sm btn-ghost" style="margin-top: 8px;">+ أضف ميعاد</button>
+            <button type="button" id="addSlot" class="btn btn-sm btn-ghost" style="margin-top: 8px;">+ Add slot</button>
             <div class="form-actions" style="margin-top: 24px;">
-              <button type="button" id="cancelEdit" class="btn btn-ghost">إلغاء</button>
-              <button type="submit" class="btn btn-primary">احفظ التعديلات</button>
+              <button type="button" id="cancelEdit" class="btn btn-ghost">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save changes</button>
             </div>
           </form>
         </div>
@@ -181,15 +182,15 @@
         slotsEl.innerHTML = sched.map((s, i) => `
           <div class="schedule-slot">
             <div class="field">
-              <label>اليوم</label>
+              <label>Day</label>
               <select data-slot-idx="${i}" data-slot-field="day">
-                ${['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map((d, di) => `<option value="${di}" ${di === s.day ? 'selected' : ''}>${d}</option>`).join('')}
+                ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d, di) => `<option value="${di}" ${di === s.day ? 'selected' : ''}>${d}</option>`).join('')}
               </select>
             </div>
-            <div class="field"><label>من</label><input type="time" value="${s.start}" data-slot-idx="${i}" data-slot-field="start" /></div>
-            <div class="field"><label>لـ</label><input type="time" value="${s.end}" data-slot-idx="${i}" data-slot-field="end" /></div>
-            <div class="field"><label>السعة</label><input type="number" min="1" value="${s.capacity}" data-slot-idx="${i}" data-slot-field="capacity" /></div>
-            <button type="button" class="btn btn-sm btn-danger" data-rm="${i}">حذف</button>
+            <div class="field"><label>From</label><input type="time" value="${s.start}" data-slot-idx="${i}" data-slot-field="start" /></div>
+            <div class="field"><label>To</label><input type="time" value="${s.end}" data-slot-idx="${i}" data-slot-field="end" /></div>
+            <div class="field"><label>Capacity</label><input type="number" min="1" value="${s.capacity}" data-slot-idx="${i}" data-slot-field="capacity" /></div>
+            <button type="button" class="btn btn-sm btn-danger" data-rm="${i}">Delete</button>
           </div>
         `).join('');
         slotsEl.querySelectorAll('[data-slot-idx]').forEach(inp => {
@@ -214,10 +215,10 @@
           tagline: document.getElementById('e-tagline').value.trim(),
           hero: document.getElementById('e-hero').value.trim(),
           long: document.getElementById('e-long').value.trim(),
-          pricing: [{ name: a.pricing[0] ? a.pricing[0].name : 'عادي', desc: a.pricing[0] ? a.pricing[0].desc : 'سيشن ساعة', price: parseInt(document.getElementById('e-price').value) || 0, duration: a.pricing[0] ? a.pricing[0].duration : 'ساعة' }],
+          pricing: [{ name: a.pricing[0] ? a.pricing[0].name : 'Standard', desc: a.pricing[0] ? a.pricing[0].desc : 'One-hour session', price: parseInt(document.getElementById('e-price').value) || 0, duration: a.pricing[0] ? a.pricing[0].duration : 'hour' }],
         });
         AquaDB.schedules.set(id, sched);
-        Aqua.toast('اتحفظ', 'success');
+        Aqua.toast('Saved', 'success');
         form.style.display = 'none';
         render();
       });

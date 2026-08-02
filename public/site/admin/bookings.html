@@ -176,15 +176,15 @@
         const rowClass = b.status === 'cancelled' ? 'cancelled' : '';
         return `
           <tr class="${rowClass}">
-            <td>
+            <td data-label="العميل">
               <strong>${b.name}</strong><br>
               <small class="muted" style="direction: ltr; display: inline-block;">${b.phone}</small>
             </td>
-            <td>${a ? a.name : '—'}</td>
-            <td>${date}<br><small class="muted">${time}</small></td>
-            <td>${b.partySize || 1}</td>
-            <td>${pay}</td>
-            <td>${status}</td>
+            <td data-label="النشاط">${a ? a.name : '—'}</td>
+            <td data-label="الموعد">${date}<br><small class="muted">${time}</small></td>
+            <td data-label="عدد">${b.partySize || 1}</td>
+            <td data-label="الدفع">${pay}</td>
+            <td data-label="الحالة">${status}</td>
             <td>
               <div class="row-actions">
                 <a href="https://wa.me/${phone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-sm btn-success" title="واتساب">💬</a>

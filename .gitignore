@@ -22,3 +22,10 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+
+# Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts

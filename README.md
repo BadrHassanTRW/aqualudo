@@ -153,16 +153,16 @@ node bench/smoke.mjs   # headless-Chrome checks of every page + link validation
 All design tokens are CSS custom properties at the top of `public/site/assets/css/main.css`:
 
 ```css
---bg: #FFF8F0;
---ink: #0B2434;
---coral: #FF5A3C;   /* primary accent */
---nile: #0F6F94;    /* secondary */
---gold: #E2B339;
+--bg: #F4FAFD;
+--ink: #082B45;
+--brand: #0B84C6;   /* primary accent */
+--nile: #25A4C7;    /* secondary */
+--gold: #E7B45B;
 --r-md: 20px;
---shadow-md: 0 12px 32px rgba(11, 36, 52, 0.10);
+--shadow-md: 0 12px 32px rgba(8, 43, 69, 0.10);
 ```
 
-Change the brand color in one place and it cascades through buttons, the admin-float, badges, etc.
+Change the brand color in one place and it cascades through buttons, the admin-float, badges, generated artwork, and other shared UI accents.
 
 ---
 

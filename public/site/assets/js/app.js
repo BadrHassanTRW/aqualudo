@@ -462,7 +462,7 @@
               <polygon id="tri-path" points="" fill="black" />
             </mask>
           </defs>
-          <rect width="100%" height="100%" fill="#FF5A3C" mask="url(#tri-mask)" />
+          <rect width="100%" height="100%" fill="#0B84C6" mask="url(#tri-mask)" />
           <line id="foam-l" class="foam" x1="0" y1="0" x2="0" y2="0" />
           <line id="foam-r" class="foam" x1="0" y1="0" x2="0" y2="0" />
         </svg>

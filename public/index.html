@@ -20,7 +20,7 @@
   <main>
 
     <section class="hero" id="hero">
-      <video class="hero-video" src="site/assets/video/hero.mp4" poster="site/assets/img/site/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" fetchpriority="low" aria-hidden="true"></video>
+      <video class="hero-video" src="site/assets/video/hero.mp4" poster="site/assets/img/site/hero-poster.webp" autoplay muted loop playsinline preload="metadata" fetchpriority="low" aria-hidden="true"></video>
       <div class="hero-bg-boat"><img src="site/assets/img/boat.png" alt="" loading="lazy" /></div>
       <div class="container">
         <div class="hero-grid">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="hero-visual reveal">
-            <img id="hero-art" src="" alt="شخص بيعمل SUP على نهر وقت الغروب" fetchpriority="high" />
+            <img id="hero-art" src="site/assets/img/site/main_image.jpg" alt="شخص بيعمل SUP على نهر وقت الغروب" fetchpriority="high" />
             <div class="badge-card">
               <span class="dot"></span>
               <div>
@@ -199,7 +199,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"التجديف هنا بقى مكان بيعالجني. الكوتشات داعمين، والنيل حاجة تانية وقت الشروق."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" alt="سلمى" loading="lazy" />
+              <img src="site/assets/img/site/team-rowing.webp" alt="" loading="lazy" />
               <div><strong>سلمى عقل</strong><small>تجديف · سنتين</small></div>
             </div>
           </div>
@@ -207,7 +207,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"أنصح جداً بسيشنز الكياك. آمنة جداً، الفريق لطيف، وبيشرحولك كل حاجة. حبيتها."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" alt="فريدة" loading="lazy" />
+              <img src="site/assets/img/activities/kayaking.webp" alt="" loading="lazy" />
               <div><strong>فريدة محمد</strong><small>كياك · ٦ شهور</small></div>
             </div>
           </div>
@@ -215,7 +215,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"جيت لتريال واحد وفضلت سنتين. أحسن قرار أخدته في القاهرة. كوميونتي حقيقية، كوتشنج حقيقي."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format" alt="أندرو" loading="lazy" />
+              <img src="site/assets/img/site/hero-poster.webp" alt="" loading="lazy" />
               <div><strong>أندرو عزت</strong><small>تجديف و SUP</small></div>
             </div>
           </div>
@@ -294,7 +294,7 @@
 
     (function () {
       const heroArt = document.getElementById('hero-art');
-      if (heroArt) heroArt.src = AquaDB.photo('sup') || AquaDB.buildArt('sup', '03');
+      if (heroArt && !heroArt.currentSrc) heroArt.src = 'site/assets/img/site/main_image.jpg';
 
       const acts = AquaDB.activities.active();
       const actsEl = document.getElementById('home-activities');

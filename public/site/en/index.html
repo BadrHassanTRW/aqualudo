@@ -20,7 +20,7 @@
   <main>
 
     <section class="hero" id="hero">
-      <video class="hero-video" src="../assets/video/hero.mp4" poster="../assets/img/site/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" fetchpriority="low" aria-hidden="true"></video>
+      <video class="hero-video" src="../assets/video/hero.mp4" poster="../assets/img/site/hero-poster.webp" autoplay muted loop playsinline preload="metadata" fetchpriority="low" aria-hidden="true"></video>
       <div class="hero-bg-boat"><img src="../assets/img/boat.png" alt="" loading="lazy" /></div>
       <div class="container">
         <div class="hero-grid">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="hero-visual reveal">
-            <img id="hero-art" src="" alt="Person paddleboarding on the river at sunset" fetchpriority="high" />
+            <img id="hero-art" src="../assets/img/site/main_image.jpg" alt="Person paddleboarding on the river at sunset" fetchpriority="high" />
             <div class="badge-card">
               <span class="dot"></span>
               <div>
@@ -199,7 +199,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"Rowing here has become my therapy. The coaches are so supportive, and the Nile is something else at sunrise."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" alt="Salma" loading="lazy" />
+              <img src="../assets/img/site/team-rowing.webp" alt="" loading="lazy" />
               <div><strong>Salma Aql</strong><small>Rowing · 2 years</small></div>
             </div>
           </div>
@@ -207,7 +207,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"I highly recommend the kayak sessions. Super safe, lovely team, and they explain everything. I loved it."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" alt="Farida" loading="lazy" />
+              <img src="../assets/img/activities/kayaking.webp" alt="" loading="lazy" />
               <div><strong>Farida Mohamed</strong><small>Kayaking · 6 months</small></div>
             </div>
           </div>
@@ -215,7 +215,7 @@
             <div class="stars">★★★★★</div>
             <blockquote>"Came for one trial and stayed two years. Best decision I made in Cairo. Real community, real coaching."</blockquote>
             <div class="who">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format" alt="Andrew" loading="lazy" />
+              <img src="../assets/img/site/hero-poster.webp" alt="" loading="lazy" />
               <div><strong>Andrew Ezzat</strong><small>Rowing &amp; SUP</small></div>
             </div>
           </div>
@@ -295,7 +295,7 @@
 
     (function () {
       const heroArt = document.getElementById('hero-art');
-      if (heroArt) heroArt.src = AquaDB.photo('sup') || AquaDB.buildArt('sup', '03');
+      if (heroArt && !heroArt.currentSrc) heroArt.src = '../assets/img/site/main_image.jpg';
 
       const acts = AquaDB.activities.active();
       const actsEl = document.getElementById('home-activities');

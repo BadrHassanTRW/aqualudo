@@ -682,10 +682,12 @@
         <div class="field">
           <label>${T('اسمك', 'Your name')}</label>
           <input type="text" id="qbName" value="${qbState.name}" placeholder="${T('مثلاً: سلمى', 'e.g. Salma')}" />
+          <div class="field-error" id="qbNameErr"></div>
         </div>
         <div class="field">
           <label>${T('موبايل أو واتساب', 'Mobile or WhatsApp')}</label>
           <input type="tel" id="qbPhone" value="${qbState.phone}" placeholder="+20 ..." />
+          <div class="field-error" id="qbPhoneErr"></div>
         </div>
       </div>
     `;
@@ -698,8 +700,8 @@
     }));
     const nameI = $('#qbName', body);
     const phoneI = $('#qbPhone', body);
-    if (nameI) nameI.addEventListener('input', () => { qbState.name = nameI.value; });
-    if (phoneI) phoneI.addEventListener('input', () => { qbState.phone = phoneI.value; });
+    if (nameI) nameI.addEventListener('input', () => { qbState.name = nameI.value; nameI.classList.remove('invalid'); const e = $('#qbNameErr'); if (e) e.classList.remove('show'); });
+    if (phoneI) phoneI.addEventListener('input', () => { qbState.phone = phoneI.value; phoneI.classList.remove('invalid'); const e = $('#qbPhoneErr'); if (e) e.classList.remove('show'); });
     renderQBSlots();
   }
 
@@ -747,7 +749,15 @@
 
   function submitQuickBook() {
     if (!qbState.activityId || !qbState.sessionId) { toast(T('اختار نشاط وموعد', 'Pick an activity and time'), 'error'); return; }
-    if (!qbState.name.trim() || !qbState.phone.trim()) { toast(T('دخّل اسمك ورقمك', 'Enter your name and number'), 'error'); return; }
+    let invalid = false;
+    const showErr = (input, errEl, msg) => {
+      if (input) input.classList.add('invalid');
+      if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+      invalid = true;
+    };
+    if (!qbState.name.trim()) showErr($('#qbName'), $('#qbNameErr'), T('اكتب اسمك', 'Please enter your name'));
+    if (!qbState.phone.trim()) showErr($('#qbPhone'), $('#qbPhoneErr'), T('اكتب رقم الموبايل أو الواتساب', 'Please enter your phone or WhatsApp number'));
+    if (invalid) { toast(T('دخّل اسمك ورقمك', 'Enter your name and number'), 'error'); return; }
     const allSessions = AquaDB.sessions.upcoming();
     const session = allSessions.find(s => s.id === qbState.sessionId);
     if (!session) { toast(T('الموعد مش متاح', 'That time is not available'), 'error'); return; }

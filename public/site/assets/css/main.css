@@ -1889,3 +1889,107 @@ html[lang="en"] .btn-arrow:hover::after { transform: translateX(4px); }
   .bottom-nav .bn-book svg { width: 20px; height: 20px; }
   body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
+
+/* ---- Excel export (admin) ---- */
+.export-excel-btn { display: inline-flex; align-items: center; gap: 8px; }
+.export-excel-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.export-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(8, 43, 69, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 320;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.export-backdrop.open { opacity: 1; pointer-events: auto; }
+.export-card {
+  width: 100%; max-width: 680px; max-height: min(86vh, 640px);
+  display: flex; flex-direction: column;
+  background: #fff; color: var(--ink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transform: translateY(-16px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+.export-backdrop.open .export-card { transform: translateY(0) scale(1); }
+.export-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; padding: 20px 24px 12px;
+}
+.export-head h2 { font-family: 'Cairo', sans-serif; font-weight: 900; font-size: 1.3rem; color: var(--ink); }
+.export-head .muted { font-size: 0.88rem; }
+.export-head .modal-close {
+  display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: var(--r-full);
+  background: var(--bg-warm); color: var(--ink);
+  transition: background 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+.export-head .modal-close:hover { background: var(--bg-warm-2); transform: rotate(90deg); }
+.export-head .modal-close svg { width: 16px; height: 16px; }
+
+.export-meta { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 14px; }
+.export-chip {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  border: 2px solid var(--line-soft);
+  background: var(--bg);
+  text-align: right;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.export-chip strong { font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; color: var(--ink); }
+.export-chip span { font-size: 0.75rem; color: var(--ink-mute); }
+.export-chip:hover { border-color: var(--brand); }
+.export-chip.active { border-color: var(--brand); background: var(--accent-soft); }
+
+/* preview table area: scrolls internally (never the page/card), no horizontal overflow */
+.export-preview-wrap {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  margin: 0 24px;
+  max-height: 300px;
+}
+.export-preview { table-layout: fixed; width: 100%; }
+.export-preview th, .export-preview td { padding: 8px 12px; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.export-preview td { max-width: 220px; }
+.export-note { padding: 12px 24px 0; font-size: 0.82rem; color: var(--ink-mute); }
+.export-foot {
+  display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+  padding: 14px 24px 18px;
+}
+#exportGo:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+@media (max-width: 980px) {
+  .adm-topbar .adm-title {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .adm-topbar .adm-quick { flex-wrap: nowrap; }
+}
+
+@media (max-width: 720px) {
+  .adm-topbar .adm-quick .export-excel-btn.btn-ghost { display: inline-flex; }
+  .adm-topbar .adm-quick .export-excel-btn span { display: none; }
+  .adm-topbar .adm-quick .export-excel-btn { padding: 8px 11px; }
+
+  /* bottom-sheet style on phones */
+  .export-backdrop { padding: 0; align-items: flex-end; }
+  .export-card { max-width: 100%; max-height: 92vh; border-radius: 24px 24px 0 0; }
+  .export-head, .export-meta, .export-note, .export-foot { padding-left: 16px; padding-right: 16px; }
+  .export-preview-wrap { margin: 0 16px; max-height: none; flex: 1 1 auto; }
+
+  /* keep the preview a real table on mobile (don't inherit the stacked-card conversion) */
+  .export-preview { display: table; width: 100%; }
+  .export-preview thead { display: table-header-group; }
+  .export-preview tbody { display: table-row-group; }
+  .export-preview tr { display: table-row; border: 0; background: transparent; box-shadow: none; margin: 0; padding: 0; }
+  .export-preview td, .export-preview th {
+    display: table-cell; text-align: right; padding: 8px 10px;
+  }
+  .export-preview td::before { display: none; }
+}

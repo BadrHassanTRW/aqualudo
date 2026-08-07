@@ -10,8 +10,8 @@ public page to guarantee no page exceeds MAX_PAGE_KB of assets.
 Pipeline:
   - Images  : Pillow re-encode (JPEG q85 progressive / WebP q80 method 6 /
               PNG quantize+optimize, keeping the original extension).
-  - Videos  : ffmpeg H.264, audio dropped, faststart, fitted to a size budget
-              by walking down (resolution, CRF) profiles until it fits.
+  - Videos  : ffmpeg H.264, audio dropped, faststart, fitted to a 2 MB size
+              budget by walking down resolution and bitrate profiles.
   - Audit   : every HTML page (admin excluded) -> sum of HTML + CSS + JS +
               referenced images + the dynamic assets injected by app.js/db.js
               (boat.png on all pages; the 5 activity photos on the
@@ -45,12 +45,12 @@ ACTIVITY_PHOTOS = [
     "assets/img/activities/wakeboard.webp",
     "assets/img/activities/fitness.webp",
 ]
-VIDEO_BUDGET_BYTES = int(1_200_000)
+VIDEO_BUDGET_BYTES = int(2_000_000)
 VIDEO_PROFILES = [
-    ("scale=1280:720", "220k"),
-    ("scale=960:540", "200k"),
-    ("scale=854:480", "200k"),
-    ("scale=640:360", "160k"),
+    ("scale=1280:720:flags=lanczos", "370k", "410k", "820k"),
+    ("scale=960:540:flags=lanczos", "370k", "410k", "820k"),
+    ("scale=854:480:flags=lanczos", "320k", "360k", "720k"),
+    ("scale=640:360:flags=lanczos", "260k", "300k", "600k"),
 ]
 
 
@@ -124,15 +124,15 @@ def compress_video(src: Path, dst: Path, budget: int) -> int:
             capture_output=True, text=True, check=True,
         ).stdout.strip().splitlines()[0]
     )
-    for i, (vf, bitrate) in enumerate(VIDEO_PROFILES):
+    for i, (vf, bitrate, maxrate, bufsize) in enumerate(VIDEO_PROFILES):
         attempt = STAGE / f"hero_attempt_{i}.mp4"
         logfile = STAGE / f"hero_attempt_{i}_2pass"
         base = [
             "ffmpeg", "-y", "-i", str(src),
-            "-vf", vf, "-r", "20", "-an",
+            "-vf", vf, "-r", "30", "-an",
             "-c:v", "libx264", "-preset", "slow",
             "-profile:v", "high", "-pix_fmt", "yuv420p",
-            "-b:v", bitrate, "-maxrate", "240k", "-bufsize", "480k",
+            "-b:v", bitrate, "-maxrate", maxrate, "-bufsize", bufsize,
             "-passlogfile", str(logfile),
         ]
         subprocess.run(base + ["-pass", "1", "-f", "null", os.devnull],
